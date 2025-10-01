@@ -1,0 +1,64 @@
+{% extends 'store/base.html' %}
+{% load currency %}
+{% block title %}Shop · Prachi's Organics{% endblock %}
+{% block content %}
+<section class="container mx-auto px-4 py-6 md:py-10">
+  <h1 class="font-serif text-3xl mb-6">Shop</h1>
+  <form method="get" class="flex flex-wrap gap-3 mb-6">
+    <select name="category" class="border rounded px-3 py-2">
+      <option value="">All Categories</option>
+      {% for category in categories %}
+        <option value="{{ category.slug }}" {% if active_category == category.slug %}selected{% endif %}>{{ category.name }}</option>
+      {% endfor %}
+    </select>
+    <select name="concern" class="border rounded px-3 py-2">
+      <option value="">All Concerns</option>
+      <option value="acne" {% if active_concern == 'acne' %}selected{% endif %}>Acne</option>
+      <option value="hair_fall" {% if active_concern == 'hair_fall' %}selected{% endif %}>Hair Fall</option>
+      <option value="dry_skin" {% if active_concern == 'dry_skin' %}selected{% endif %}>Dry Skin</option>
+      <option value="aging" {% if active_concern == 'aging' %}selected{% endif %}>Anti-Aging</option>
+      <option value="hydration" {% if active_concern == 'hydration' %}selected{% endif %}>Hydration</option>
+    </select>
+    <button class="bg-brandGreen text-white px-4 py-2 rounded" type="submit">Filter</button>
+  </form>
+
+  <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+    {% for product in products %}
+      <a href="/products/{{ product.slug }}/" class="bg-white rounded shadow hover:shadow-md transition overflow-hidden">
+        <div class="h-44 bg-brandBeige flex items-center justify-center">
+          {% if product.image %}
+            <img class="h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}"/>
+          {% else %}
+            <div class="text-gray-500">No Image</div>
+          {% endif %}
+        </div>
+        <div class="p-4">
+          <div class="font-semibold">{{ product.name }}</div>
+          <div class="text-brandGreen font-semibold">
+            {% if product.sale_price %}
+              {{ product.sale_price|inr }} <span class="text-gray-400 line-through text-sm">{{ product.price|inr }}</span>
+            {% else %}
+              {{ product.price|inr }}
+            {% endif %}
+          </div>
+          {% if product.visible_reviews %}
+            <div class="mt-2 text-yellow-500 text-sm">
+              {% with r=product.visible_reviews.0 %}
+                {% if r %}
+                  {% for i in '12345' %}{% if forloop.counter <= r.rating %}★{% else %}☆{% endif %}{% endfor %}
+                  <span class="ml-2 text-gray-600">{{ r.comment }}</span>
+                {% endif %}
+              {% endwith %}
+            </div>
+          {% endif %}
+        </div>
+      </a>
+    {% empty %}
+      <div class="text-gray-500">No products found.</div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+
+

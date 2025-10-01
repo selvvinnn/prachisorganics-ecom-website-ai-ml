@@ -1,0 +1,326 @@
+{% extends 'store/base.html' %}
+{% load currency %}
+{% load review_filters %}
+{% block title %}{{ combo.name }} · Combo · Prachi's Organics{% endblock %}
+{% block content %}
+<section class="container mx-auto px-4 py-10">
+  <div class="grid md:grid-cols-2 gap-10">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+      <div class="aspect-[4/3] bg-brandBeige relative">
+        {% if combo.image %}
+          <img src="{{ combo.image.url }}" alt="{{ combo.name }}" class="absolute inset-0 w-full h-full object-cover"/>
+        {% endif %}
+      </div>
+    </div>
+    <div>
+      <h1 class="font-serif text-3xl mb-2">{{ combo.name }}</h1>
+      <div class="text-brandGreen text-2xl font-semibold">
+        {{ combo.discounted_price|inr }} <span class="text-gray-400 line-through text-base">{{ combo.original_price|inr }}</span>
+      </div>
+      <p class="text-gray-700 mt-4">{{ combo.description }}</p>
+
+      <div class="mt-6">
+        <div class="font-semibold mb-2">Includes</div>
+        <ul class="space-y-2">
+          {% for p in included_products %}
+            <li class="flex items-center gap-3">
+              <span class="text-brandGreen">•</span>
+              <a href="{% url 'store:product_detail' p.slug %}" class="hover:text-brandGreen">{{ p.name }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <form method="post" class="mt-6">{% csrf_token %}
+        {% if request.user.is_authenticated %}
+          <button class="bg-brandGreen text-white px-6 py-2 rounded" type="submit">Add Combo to Cart</button>
+        {% else %}
+          <a class="bg-brandGreen text-white px-6 py-2 rounded inline-block" href="/login/?next={{ request.path }}">Login to Buy</a>
+        {% endif %}
+      </form>
+      <div class="mt-8">
+        <div class="text-sm text-gray-600">Category: {{ product.category.name }}</div>
+<div class="mt-8 pt-6 border-t border-gray-200">
+  <div class="space-y-4">
+
+    <!-- What Makes It Potent -->
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        What Makes It Potent?
+        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
+      </summary>
+      <div class="mt-2 space-y-2 text-gray-700 text-sm">
+        <p>[Description of what makes the product potent]</p>
+        <ul class="list-disc list-inside">
+          <li>Item 1</li>
+          <li>Item 2</li>
+        </ul>
+      </div>
+    </details>
+
+    <!-- Ideal For -->
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        Ideal For
+        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
+      </summary>
+      <div class="mt-2 text-gray-700 text-sm">
+        <p>[Description of who the product is ideal for]</p>
+      </div>
+    </details>
+
+    <!-- How to Use -->
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        How to Use
+        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
+      </summary>
+      <div class="mt-2 text-gray-700 text-sm">
+        <p>[Instructions on how to use the product]</p>
+      </div>
+    </details>
+
+    <!-- Consumer Studies -->
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        Consumer Studies
+        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
+      </summary>
+      <div class="mt-2 text-gray-700 text-sm">
+        <p>[Information about consumer studies]</p>
+      </div>
+    </details>
+
+  </div>
+    </div>
+      </div>
+          </div>
+
+          
+    </div>
+  </div>
+
+
+<!-- Customer Reviews Section -->
+  <div class="mt-16 bg-white rounded-xl border border-gray-100 shadow-sm p-8">
+    <h2 class="font-serif text-2xl mb-6">Customer Reviews</h2>
+    
+    <!-- Review Summary -->
+    <div class="grid md:grid-cols-3 gap-8 mb-8">
+      <div class="md:col-span-1">
+        <div class="flex items-center gap-2 text-3xl font-bold text-yellow-500 mb-2">
+          <span>{{ avg_rating|floatformat:2 }}</span>
+          <span class="text-lg text-gray-600">out of 5</span>
+        </div>
+        <div class="flex items-center gap-1 mb-2">
+          {% for i in "12345"|make_list %}
+            <i class="fa-solid fa-star text-yellow-500 {% if forloop.counter > avg_rating %}opacity-30{% endif %}"></i>
+          {% endfor %}
+        </div>
+        <div class="text-sm text-gray-600">Based on {{ total_reviews }} reviews</div>
+      </div>
+      
+<div class="md:col-span-1">
+  <div class="space-y-2">
+    {% for star_num in "54321"|make_list %}
+      {% with star=star_num|add:"0" %}
+      <div class="flex items-center gap-2 text-sm">
+        <span class="w-8 text-right">{{ star }}</span>
+        <i class="fa-solid fa-star text-yellow-500"></i>
+        <div class="flex-1 bg-gray-200 rounded-full h-2">
+          {% if total_reviews > 0 %}
+            {% widthratio rating_dist|get_item:star total_reviews 100 as bar_width %}
+            <div class="bg-brandGreen h-2 rounded-full transition-all duration-300 ease-in-out" style="width: {{ bar_width }}%;"></div>
+          {% else %}
+            <div class="bg-brandGreen h-2 rounded-full" style="width: 0%;"></div>
+          {% endif %}
+        </div>
+        <span class="w-8 text-xs text-gray-600">
+          {{ rating_dist|get_item:star|default:"0" }}
+        </span>
+      </div>
+      {% endwith %}
+    {% endfor %}
+  </div>
+</div>
+
+
+
+      <div class="md:col-span-1 flex items-center justify-end">
+        {% if request.user.is_authenticated %}
+          <button onclick="document.getElementById('review-form').scrollIntoView({behavior: 'smooth'})" class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition">
+            Write a review
+          </button>
+        {% else %}
+          <a href="/login/?next={{ request.path }}" class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition inline-block">
+            Write a review
+          </a>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Sort Dropdown -->
+    <div class="flex items-center gap-4 mb-6">
+      <span class="text-sm text-gray-600">Sort by:</span>
+      <select class="border rounded px-3 py-1 text-sm">
+        <option>Most Recent</option>
+        <option>Highest Rated</option>
+        <option>Lowest Rated</option>
+      </select>
+    </div>
+    
+    <!-- Individual Reviews -->
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+      {% for r in reviews %}
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                <i class="fa-solid fa-user text-gray-600 text-sm"></i>
+              </div>
+              <div>
+                <div class="font-semibold text-sm">{{ r.user.username }}</div>
+                <span class="bg-black text-white text-xs px-2 py-1 rounded">Verified</span>
+              </div>
+            </div>
+            <div class="text-xs text-gray-500">{{ r.created_at|date:'d/m/Y' }}</div>
+          </div>
+          
+          <div class="flex items-center gap-1 mb-2">
+            {% for i in "12345"|make_list %}
+              <i class="fa-solid fa-star text-yellow-500 {% if forloop.counter > r.rating %}opacity-30{% endif %}"></i>
+            {% endfor %}
+          </div>
+          
+          <div class="font-semibold text-sm mb-2">{{ r.comment|truncatechars:50 }}</div>
+          <div class="text-sm text-gray-700">{{ r.comment }}</div>
+          
+          {% if r.photo %}
+            <img loading="lazy" src="{{ r.photo.url }}" alt="review" class="mt-3 w-full max-h-48 object-cover rounded">
+          {% endif %}
+        </div>
+      {% empty %}
+        <div class="col-span-3 text-center text-gray-500 py-8">No reviews yet. Be the first to review this product!</div>
+      {% endfor %}
+    </div>
+    
+    <!-- Write Review Form -->
+<!-- Write Review Form -->
+{% if request.user.is_authenticated %}
+  <div id="review-form" class="border-t pt-8">
+    <h3 class="font-semibold mb-4">Write a Review</h3>
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="add_review">
+
+      <!-- Rating Slider -->
+<div class="slider-container">
+  <div class="slider-wrapper">
+    <span class="slider-value" id="sliderValue">3</span>
+    <input type="range" min="1" max="5" value="3" class="slider" id="sliderInput" name="rating" required>
+
+  </div>
+</div>
+<style>
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 9999px;
+  background: linear-gradient(to right, #7faa18 0%, #7faa18 0%, #e5e7eb 0%, #e5e7eb 100%);
+  outline: none;
+  position: relative;
+}
+
+/* Track (Webkit) */
+.slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+}
+
+/* Thumb */
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border: 2px solid #7faa18;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Firefox */
+.slider::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: #e5e7eb;
+}
+.slider::-moz-range-progress {
+  background: #7faa18;
+  height: 8px;
+  border-radius: 9999px;
+}
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #fff;
+  border: 2px solid #7faa18;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}</style>
+<script>
+  const slider = document.getElementById("sliderInput");
+  const valueText = document.getElementById("sliderValue");
+
+  function updateSlider() {
+    const val = slider.value;
+    const min = slider.min ? slider.min : 0;
+    const max = slider.max ? slider.max : 100;
+    const percent = ((val - min) / (max - min)) * 100;
+
+    // update number
+    valueText.textContent = val;
+
+    // update track fill color
+    slider.style.background = `linear-gradient(to right, #7faa18 0%, #7faa18 ${percent}%, #e5e7eb ${percent}%, #e5e7eb 100%)`;
+  }
+
+  slider.addEventListener("input", updateSlider);
+  updateSlider(); // initialize
+</script>
+
+        <div>
+          <label class="block text-sm font-medium mb-2">Your Review *</label>
+          <textarea name="comment" class="border rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brandGreen" rows="4" placeholder="Share your experience with this product..." required></textarea>
+        </div>
+
+      <!-- Photo -->
+      <div>
+        <label class="block text-sm font-medium mb-2">Photo (optional)</label>
+        <input type="file" name="photo" accept="image/*" class="border rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brandGreen">
+        <p class="text-xs text-gray-500 mt-1">Upload a photo to show how the product worked for you</p>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="bg-brandGreen text-white px-6 py-3 rounded-lg bg-brandGreen hover:bg-brandBrown hover:text-white transition:transition">
+        Submit Review
+      </button>
+    </form>
+  </div>
+{% else %}
+  <div class="border-t pt-8 text-center">
+    <p class="text-gray-600 mb-4">Want to share your experience?</p>
+    <a href="/login/?next={{ request.path }}" class="bg-brandGreen text-white px-6 py-3 rounded-lg hover:bg-green-600 transition inline-block">
+      Login to Write Review
+    </a>
+  </div>
+{% endif %}
+  
+  </div>
+</section>
+{% endblock %}

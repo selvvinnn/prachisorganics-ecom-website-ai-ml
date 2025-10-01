@@ -1,0 +1,83 @@
+{% extends 'store/base.html' %}
+{% block title %}Track Order · Prachi's Organics{% endblock %}
+{% block content %}
+<section class="container mx-auto px-4 py-10 max-w-3xl">
+  <h1 class="font-serif text-3xl mb-6">Track your order</h1>
+
+  <form method="get" class="mb-6 flex flex-col sm:flex-row gap-3">
+    <input name="order_id" value="{{ request.GET.order_id }}" placeholder="Enter Order ID (e.g. 1024)" class="border rounded px-3 py-2 flex-1">
+    <button class="bg-brandGreen text-white px-4 py-2 rounded" type="submit">Track</button>
+  </form>
+
+  {% if order %}
+  <div class="bg-white rounded-xl border p-6 shadow-sm">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <div class="text-lg font-semibold">Order #{{ order.id }}</div>
+        <div class="text-sm text-gray-500">Placed on {{ order.created_at|date:'M d, Y, h:i A' }}</div>
+      </div>
+      <div>
+        {% with s=order.status %}
+          {% if s == 'processing' %}<span class="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">Processing</span>{% endif %}
+          {% if s == 'shipped' %}<span class="px-3 py-1 text-xs rounded-full bg-blue-100 text-blue-700">Shipped</span>{% endif %}
+          {% if s == 'delivered' %}<span class="px-3 py-1 text-xs rounded-full bg-green-100 text-green-700">Delivered</span>{% endif %}
+          {% if s == 'cancelled' %}<span class="px-3 py-1 text-xs rounded-full bg-red-100 text-red-700">Cancelled</span>{% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    <!-- Progress Steps -->
+    {% with s=order.status %}
+    <div class="mt-6 grid grid-cols-3 md:grid-cols-4 gap-3 text-center">
+      <div class="p-3 rounded border {% if s in 'processing,shipped,delivered' %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200{% endif %}">
+        <div class="text-sm font-semibold">Processing</div>
+      </div>
+      <div class="p-3 rounded border {% if s in 'shipped,delivered' %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200{% endif %}">
+        <div class="text-sm font-semibold">Shipped</div>
+      </div>
+      <div class="p-3 rounded border {% if s == 'delivered' %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200{% endif %}">
+        <div class="text-sm font-semibold">Delivered</div>
+      </div>
+      <div class="hidden md:block p-3 rounded border {% if s == 'cancelled' %}bg-red-50 border-red-200{% else %}bg-gray-50 border-gray-200{% endif %}">
+        <div class="text-sm font-semibold">Cancelled</div>
+      </div>
+    </div>
+    {% endwith %}
+
+    <!-- Summary -->
+    <div class="mt-6 grid sm:grid-cols-2 gap-4">
+      <div class="bg-white rounded border p-4">
+        <div class="text-sm text-gray-500 mb-1">Shipping To</div>
+        <div class="text-sm">
+          {{ order.first_name }} {{ order.last_name }}<br>
+          {{ order.address }}<br>
+          {{ order.city }} - {{ order.zipcode }}
+        </div>
+      </div>
+      <div class="bg-white rounded border p-4">
+        <div class="text-sm text-gray-500 mb-1">Payment</div>
+        <div class="text-sm">Amount Paid: <span class="font-semibold">₹{{ order.paid_amount }}</span></div>
+        <div class="text-xs text-gray-500">Email: {{ order.email }}</div>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="mt-6">
+      <div class="text-sm font-semibold mb-2">Items</div>
+      <div class="divide-y">
+        {% for it in order.items.all %}
+          <div class="py-3 flex items-center justify-between">
+            <div class="text-sm">{{ it.get_name }}</div>
+            <div class="text-sm">₹{{ it.price }} × {{ it.quantity }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% elif request.GET.order_id %}
+    <div class="text-gray-600">No order found for ID {{ request.GET.order_id }}.</div>
+  {% endif %}
+</section>
+{% endblock %}
+
+

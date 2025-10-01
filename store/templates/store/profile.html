@@ -1,0 +1,52 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="container mx-auto p-6">
+  <h1 class="text-3xl font-bold mb-6">My Profile</h1>
+
+  <!-- Basic Info -->
+  <div class="mb-8">
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+  </div>
+
+  <!-- Orders Section -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-semibold mb-4">My Orders</h2>
+    {% if orders %}
+      <ul class="space-y-4">
+        {% for order in orders %}
+          <li class="border p-4 rounded shadow-sm">
+            <p><strong>Order #{{ order.id }}</strong> - {{ order.created_at|date:"M d, Y" }}</p>
+            <p>Status: {{ order.status }}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-500">No orders yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Combos Section -->
+  <div class="mb-8">
+    <h2 class="text-2xl font-semibold mb-4">My Combos</h2>
+    {% if combos %}
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {% for combo in combos %}
+          <div class="border rounded p-4 shadow-sm">
+            <p class="font-semibold">{{ combo.name }}</p>
+            <p class="text-sm text-gray-500">${{ combo.discounted_price }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">No combos yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Cart Link -->
+  <div>
+    <a href="/cart/" class="px-4 py-2 bg-brandGreen text-white rounded shadow">Go to Cart</a>
+  </div>
+</div>
+{% endblock %}
