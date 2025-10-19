@@ -86,6 +86,9 @@ def privacy_view(request):
 def refund_view(request):
     return render(request, 'store/refund.html')
 
+def faq_view(request):
+    return render(request, 'store/faq.html')
+
 def track_order_view(request):
     order = None
     order_id = str(request.GET.get('order_id', '')).strip()
@@ -223,6 +226,7 @@ def combo_deals_view(request):
     from django.db.models import Prefetch, Avg, Count
     site_cfg = None
     try:
+        from .models import SiteSettings
         site_cfg = SiteSettings.objects.first()
     except Exception:
         site_cfg = None
@@ -265,8 +269,10 @@ def combo_detail_view(request, combo_slug):
     # Collect reviews from included products for display
     site_cfg = None
     try:
+        from .models import SiteSettings
         site_cfg = SiteSettings.objects.first()
     except Exception:
+        site_cfg = None
         site_cfg = None
     reviews_qs = Review.objects.select_related('user').filter(product__in=included_products).order_by('-created_at')
     if site_cfg and site_cfg.require_review_moderation:
@@ -363,9 +369,7 @@ def add_to_cart(request, product_slug):
     if quantity < 1:
         quantity = 1
     cart, _ = Cart.objects.get_or_create(user=request.user)
-    
-    # Always create a new cart item for individual products to avoid merging with combo items
-    # Individual products should have unit_price = None (use product's price)
+
     CartItem.objects.create(
         cart=cart,
         product=product,
