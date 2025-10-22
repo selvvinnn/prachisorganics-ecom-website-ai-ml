@@ -1,3 +1,4 @@
+import razorpay
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -5,6 +6,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db import models
 from django.db.models import Q
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 from .models import (
     Category,
@@ -396,7 +400,8 @@ def profile(request):
     }
     return render(request, "store/profile.html", context)
 
-
+from django.conf import settings
+import razorpay
 @login_required
 def checkout_view(request):
     cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -408,6 +413,7 @@ def checkout_view(request):
     subtotal = sum([item.line_total() for item in items]) if items else 0
 
     if request.method == 'POST':
+        
         first_name = request.POST.get('first_name', '')
         last_name = request.POST.get('last_name', '')
         email = request.POST.get('email', '')
@@ -424,13 +430,28 @@ def checkout_view(request):
                 'city': city,
                 'subtotal': str(subtotal),
             }
-            return redirect('store:payment')
+            return redirect('store:check')
         messages.error(request, 'Please fill in all required fields.')
 
-    return render(request, 'store/checkout.html', {
-        'items': items,
-        'subtotal': subtotal,
+    client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
+    amount_in_paise = int(float(subtotal) * 100)
+    payment = client.order.create({
+    'amount': int(subtotal * 100),  # convert rupees to paise
+    'currency': 'INR',
+    'payment_capture': 1
     })
+    
+
+    cart.razorpay_order_id = payment['id']
+    cart.save()
+    print("****")
+    print(payment)
+    print("****")
+    
+
+    context = {'cart': cart, 'payment': payment, 'items': items, 'subtotal': subtotal}
+    return render(request, 'store/checkout.html', context)
+
 
 @login_required
 def update_cart(request, item_id):
@@ -447,6 +468,7 @@ def update_cart(request, item_id):
             else:
                 item.delete()  # remove item if qty goes below 1
     return redirect('store:cart')
+    
 
 
 @login_required
@@ -456,6 +478,7 @@ def remove_from_cart(request, item_id):
         item.delete()
     return redirect('store:cart')
 
+from django.conf import settings
 
 @login_required
 def payment_view(request):
@@ -510,6 +533,7 @@ def payment_view(request):
         messages.success(request, 'Payment successful! Order placed.')
         request.session.pop('checkout_data', None)
         return redirect('store:home')
+    
 
     subtotal = sum([i.line_total() for i in items])
     return render(request, 'store/payment.html', {
@@ -517,5 +541,31 @@ def payment_view(request):
         'subtotal': subtotal,
         'checkout': checkout_data,
     })
+
+@csrf_exempt
+def verify_payment(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        razorpay_order_id = data.get('razorpay_order_id')
+        razorpay_payment_id = data.get('razorpay_payment_id')
+        razorpay_signature = data.get('razorpay_signature')
+
+        client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
+
+        try:
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            })
+
+            cart = Cart.objects.get(user=request.user)
+            cart.is_paid = True  # (add this field if not exists)
+            cart.save()
+            return JsonResponse({'status': 'success'})
+        except:
+            return JsonResponse({'status': 'failure'})
+
+
 
 

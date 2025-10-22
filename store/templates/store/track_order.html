@@ -52,6 +52,8 @@
           {{ order.first_name }} {{ order.last_name }}<br>
           {{ order.address }}<br>
           {{ order.city }} - {{ order.zipcode }}
+          {{ order.date_shipped|date:'M d, Y' }}<br>
+          {{ order.phone }}
         </div>
       </div>
       <div class="bg-white rounded border p-4">

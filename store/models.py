@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.text import slugify
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+import datetime 
 
 
 class CustomUser(AbstractUser):
@@ -48,6 +51,10 @@ class Product(models.Model):
     stock = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
     concern = models.CharField(max_length=50, choices=CONCERN_CHOICES, blank=True)
+    what_makes_it_potent = models.TextField(blank=True)
+    how_to_use = models.TextField(blank=True)
+    ideal_for = models.TextField(blank=True)
+    consumer_studies = models.TextField(blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -100,6 +107,10 @@ class Review(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='carts')
     created_at = models.DateTimeField(auto_now_add=True)
+    razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
+    razorpay_payment_signature = models.CharField(max_length=100, blank=True, null=True)
+
 
     def __str__(self) -> str:
         return f"Cart #{self.id} for {self.user.username}"
@@ -153,10 +164,20 @@ class Order(models.Model):
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
     created_at = models.DateTimeField(auto_now_add=True)
+    shipped = models.BooleanField(default=False)
+    date_shipped = models.DateTimeField(blank=True, null=True)
 
     def __str__(self) -> str:
         return f"Order #{self.id} - {self.user.username}"
 
+#Auto add shipping date when marked as shipped
+@receiver(pre_save, sender=Order)
+def set_date_shipped(sender, instance, **kwargs):
+    if instance.pk:
+        now = datetime.datetime.now()
+        obj = sender._default_manager.get(pk=instance.pk)
+        if instance.shipped and not obj.shipped:
+            instance.date_shipped = now
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
@@ -222,3 +243,21 @@ class Offer(models.Model):
     def __str__(self) -> str:
         return self.title
 
+class ShippingAddress(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='shipping_addresses', blank=True, null=True)
+    full_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=255)
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    zipcode = models.CharField(max_length=20)
+    country = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=20)
+
+    #Don't pluralize address
+    class Meta:
+        verbose_name_plural = 'Shipping Address'
+
+    def __str__(self):
+        return f'Shipping Address - {str(self.id)}'

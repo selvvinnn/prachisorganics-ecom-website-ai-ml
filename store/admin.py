@@ -1,8 +1,14 @@
 from django.contrib import admin
+from django.db import models
 from .models import (
     Category, Product, ComboDeal, Review, 
-    Cart, CartItem, Order, OrderItem, ContactMessage, SiteSettings, Offer
+    Cart, CartItem, Order, OrderItem, ContactMessage, SiteSettings, Offer, ShippingAddress, CustomUser
 )
+
+@admin.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ['username', 'email', 'first_name', 'last_name', 'is_staff']
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -11,10 +17,14 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'price', 'sale_price', 'stock', 'is_available']
+    list_display = ['name', 'category', 'price', 'sale_price', 'stock', 'is_available', 'what_makes_it_potent', 'how_to_use', 'ideal_for', 'consumer_studies']
     list_filter = ['category', 'concern', 'is_available']
     search_fields = ['name', 'description']
     prepopulated_fields = {'slug': ('name',)}
+
+    formfield_overrides = {
+        models.TextField: {'widget': admin.widgets.AdminTextareaWidget(attrs={'rows':4, 'cols':80})},   
+    }
 
 @admin.register(ComboDeal)
 class ComboDealAdmin(admin.ModelAdmin):
@@ -35,7 +45,7 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'status', 'paid_amount', 'created_at']
+    list_display = ['id', 'user', 'status', 'paid_amount', 'created_at', 'shipped', 'date_shipped']
     list_filter = ['status', 'created_at']
 
 @admin.register(OrderItem)
@@ -59,3 +69,8 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 class OfferAdmin(admin.ModelAdmin):
     list_display = ['title', 'is_active', 'sort_order']
     list_editable = ['is_active', 'sort_order']
+
+@admin.register(ShippingAddress)
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ['full_name', 'email', 'address_line1', 'city', 'state', 'zipcode', 'country', 'phone_number']
+    list_filter = ['city', 'state', 'country']

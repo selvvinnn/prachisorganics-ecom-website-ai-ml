@@ -31,58 +31,60 @@
       </form>
       <div class="mt-8">
         <div class="text-sm text-gray-600">Category: {{ product.category.name }}</div>
+
 <div class="mt-8 pt-6 border-t border-gray-200">
-  <div class="space-y-4">
+  <div class="space-y-4"></div>
+    {% if product.what_makes_it_potent %}
+      <details class="product-detail group border-b border-gray-200 pb-4">
+        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+          What Makes It Potent?
+          <span class="detail-icon">+</span>
+        </summary>
+        <div class="mt-2 space-y-2 text-gray-700 text-sm">
+          {{ product.what_makes_it_potent|linebreaks }}
+        </div>
+      </details>
+    {% endif %}
 
-    <!-- What Makes It Potent -->
-    <details class="group border-b border-gray-200 pb-4">
-      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-        What Makes It Potent?
-        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
-      </summary>
-      <div class="mt-2 space-y-2 text-gray-700 text-sm">
-        <p>[Description of what makes the product potent]</p>
-        <ul class="list-disc list-inside">
-          <li>Item 1</li>
-          <li>Item 2</li>
-        </ul>
-      </div>
-    </details>
+    {% if product.ideal_for %}
+      <details class="product-detail group border-b border-gray-200 pb-4">
+        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+          Ideal For
+          <span class="detail-icon">+</span>
+        </summary>
+        <div class="mt-2 text-gray-700 text-sm">
+          {{ product.ideal_for|linebreaks }}
+        </div>
+      </details>
+    {% endif %}
 
-    <!-- Ideal For -->
-    <details class="group border-b border-gray-200 pb-4">
-      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-        Ideal For
-        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
-      </summary>
-      <div class="mt-2 text-gray-700 text-sm">
-        <p>[Description of who the product is ideal for]</p>
-      </div>
-    </details>
+    {% if product.how_to_use %}
+      <details class="product-detail group border-b border-gray-200 pb-4">
+        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+          How to Use
+          <span class="detail-icon">+</span>
+        </summary>
+        <div class="mt-2 text-gray-700 text-sm">
+          {{ product.how_to_use|linebreaks }}
+        </div>
+      </details>
+    {% endif %}
 
-    <!-- How to Use -->
-    <details class="group border-b border-gray-200 pb-4">
-      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-        How to Use
-        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
-      </summary>
-      <div class="mt-2 text-gray-700 text-sm">
-        <p>tHIS IS MY PRODUCT</p>
-      </div>
-    </details>
-
-    <!-- Consumer Studies -->
-    <details class="group border-b border-gray-200 pb-4">
-      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-        Consumer Studies
-        <span class="transition-transform duration-200 group-open:rotate-45">+</span>
-      </summary>
-      <div class="mt-2 text-gray-700 text-sm">
-        <p>[Information about consumer studies]</p>
-      </div>
-    </details>
+    {% if product.consumer_studies %}
+      <details class="product-detail group border-b border-gray-200 pb-4">
+        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+          Consumer Studies
+          <span class="detail-icon">+</span>
+        </summary>
+        <div class="mt-2 text-gray-700 text-sm">
+          {{ product.consumer_studies|linebreaks }}
+        </div>
+      </details>
+    {% endif %}
 
   </div>
+</div>
+
     </div>
       </div>
           </div>
@@ -160,7 +162,7 @@
       </div>
     </div>
     
-    <!-- Sort Dropdown -->
+    
     <div class="flex items-center gap-4 mb-6">
       <span class="text-sm text-gray-600">Sort by:</span>
       <select class="border rounded px-3 py-1 text-sm">
@@ -170,7 +172,7 @@
       </select>
     </div>
     
-    <!-- Individual Reviews -->
+    
     <div class="grid md:grid-cols-3 gap-6 mb-8">
       {% for r in reviews %}
         <div class="bg-gray-50 rounded-lg p-4">
@@ -205,8 +207,7 @@
       {% endfor %}
     </div>
     
-    <!-- Write Review Form -->
-<!-- Write Review Form -->
+
 {% if request.user.is_authenticated %}
   <div id="review-form" class="border-t pt-8">
     <h3 class="font-semibold mb-4">Write a Review</h3>
@@ -214,7 +215,7 @@
       {% csrf_token %}
       <input type="hidden" name="action" value="add_review">
 
-      <!-- Rating Slider -->
+    
 <div class="slider-container">
   <div class="slider-wrapper">
     <span class="slider-value" id="sliderValue">3</span>
@@ -234,13 +235,13 @@
   position: relative;
 }
 
-/* Track (Webkit) */
+
 .slider::-webkit-slider-runnable-track {
   height: 8px;
   border-radius: 9999px;
 }
 
-/* Thumb */
+
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -254,7 +255,7 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Firefox */
+
 .slider::-moz-range-track {
   height: 8px;
   border-radius: 9999px;
@@ -300,14 +301,13 @@
           <textarea name="comment" class="border rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brandGreen" rows="4" placeholder="Share your experience with this product..." required></textarea>
         </div>
 
-      <!-- Photo -->
+      
       <div>
         <label class="block text-sm font-medium mb-2">Photo (optional)</label>
         <input type="file" name="photo" accept="image/*" class="border rounded-lg w-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brandGreen">
         <p class="text-xs text-gray-500 mt-1">Upload a photo to show how the product worked for you</p>
       </div>
 
-      <!-- Submit -->
       <button type="submit" class="bg-brandGreen text-white px-6 py-3 rounded-lg bg-brandGreen hover:bg-brandBrown hover:text-white transition:transition">
         Submit Review
       </button>

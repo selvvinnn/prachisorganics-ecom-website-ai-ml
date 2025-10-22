@@ -1,31 +1,41 @@
 {% extends 'store/base.html' %}
-{% load currency %}
 {% block title %}Payment · Prachi's Organics{% endblock %}
 {% block content %}
-<section class="container mx-auto px-4 py-10">
-  <h1 class="font-serif text-3xl mb-6">Payment</h1>
-  <div class="grid md:grid-cols-3 gap-8">
-    <div class="md:col-span-2 bg-white p-6 rounded shadow">
-      <p class="text-gray-700 mb-4">This is a sandbox payment step. Click Pay Now to simulate a successful payment.</p>
-      <form method="post">{% csrf_token %}
-        <button class="bg-brandGreen text-white px-6 py-2 rounded" type="submit">Pay Now</button>
-      </form>
-    </div>
-    <div class="bg-white p-6 rounded shadow">
-      <div class="font-semibold mb-2">Order Summary</div>
-      {% for item in items %}
-        <div class="py-2 flex items-center justify-between">
-          <div class="text-sm">{{ item.product.name }} x {{ item.quantity }}</div>
-          <div class="text-sm font-semibold">{{ item.line_total|inr }}</div>
-        </div>
-      {% endfor %}
-      <div class="mt-4 flex justify-between">
-        <div>Subtotal</div>
-        <div class="font-semibold">{{ subtotal|inr }}</div>
-      </div>
-    </div>
-  </div>
+<section class="container mx-auto px-4 py-10 text-center">
+  <h1 class="font-serif text-3xl mb-6">Complete Your Payment</h1>
+
+  <button id="rzp-button1" class="bg-brandGreen text-white px-6 py-3 rounded">
+    Pay ₹{{ checkout_data.subtotal }}
+  </button>
 </section>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+var options = {
+    "key": "{{ razorpay_key }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "Prachi's Organics",
+    "description": "Order Payment",
+    "order_id": "{{ order_id }}",
+    "handler": function (response){
+        alert("Payment successful! ID: " + response.razorpay_payment_id);
+    },
+    "prefill": {
+        "name": "{{ checkout_data.first_name }} {{ checkout_data.last_name }}",
+        "email": "{{ checkout_data.email }}"
+    },
+    "theme": {
+        "color": "#3399cc"
+    }
+};
+var rzp1 = new Razorpay(options);
+rzp1.on('payment.failed', function (response){
+    alert("Payment Failed: " + response.error.description);
+});
+document.getElementById('rzp-button1').onclick = function(e){
+    rzp1.open();
+    e.preventDefault();
+}
+</script>
 {% endblock %}
-
-
