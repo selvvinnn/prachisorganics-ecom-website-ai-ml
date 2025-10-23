@@ -1,2 +1,2 @@
-release: python manage.py migrate
 web: gunicorn prachiorganics.wsgi:application --log-file -
+web: python manage.py runserver && gunicorn {prachiorganics}.wsgi
