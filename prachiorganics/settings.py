@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-_)#k=+yh6ru+3^3pr!%!c#3im4--#c9ig4-q=f-j#(#(dzi$*p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://prachisorganics.com','prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
+ALLOWED_HOSTS = ['https://prachisorganics.com','prachisorganics.com','prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
 CSRF_TRUSTED_ORIGINS = ['https://prachisorganics.com','https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
 
 
