@@ -1,2 +1,2 @@
 web: gunicorn prachiorganics.wsgi:application --log-file -
-web: python manage.py migrate && gunicorn prachiorganics.wsgi
+web: python manage.py migrate && gunicorn {prachiorganics}.wsgi
