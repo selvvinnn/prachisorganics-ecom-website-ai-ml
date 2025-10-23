@@ -1,2 +1,2 @@
-web: gunicorn prachiorganics.wsgi --log-file
-web: python manage.py runserver && gunicorn prachiorganics.wsgi
+web: gunicorn store.wsgi 
+web: python manage.py runserver && gunicorn store.wsgi
