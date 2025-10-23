@@ -1,5 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
+from django.views.generic import TemplateView
 from . import views
 
 app_name = 'store'
@@ -23,6 +24,7 @@ urlpatterns = [
     path('checkout/', views.checkout_view, name='checkout'),
     path('payment/', views.payment_view, name='payment'),
     path('payment/', views.payment_view, name='payment'),
+    path('verify-payment/', views.verify_payment, name='verify_payment'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup_view, name='signup'),
@@ -31,6 +33,7 @@ urlpatterns = [
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('order-success/', TemplateView.as_view(template_name='store/order_success.html'), name='order_success'),
 
 ]
 
