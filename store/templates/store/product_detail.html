@@ -5,10 +5,10 @@
 {% block content %}
 <section class="container mx-auto px-4 py-10">
   <div class="grid md:grid-cols-2 gap-10">
-    <div class="bg-white rounded shadow p-4">
-      <div class="h-96 bg-brandBeige flex items-center justify-center">
+    <div class="bg-white rounded shadow p-4 flex justify-center items-center">
+      <div class="aspect-[3/4] w-full bg-brandBeige rounded overflow-hidden flex justify-center items-center">
         {% if product.image %}
-          <img class="h-full object-contain" src="{{ product.image.url }}" alt="{{ product.name }}"/>
+          <img class="w-full h-auto object-contain" src="{{ product.image.url }}" alt="{{ product.name }}">
         {% else %}
           <div class="text-gray-500">No Image</div>
         {% endif %}
@@ -93,16 +93,7 @@
           
   
 
-  <div class="mt-12">
-    <div class="flex gap-6 border-b">
-      <button class="py-2 px-3 border-b-2 border-brandGreen">Description</button>
-    </div>
-    <div class="mt-6 grid md:grid-cols-3 gap-8">
-      <div class="md:col-span-2">
-        <p class="bg-white p-6 rounded shadow">{{ product.description }}</p>
-      </div>
-    </div>
-  </div>
+
 
   <!-- Customer Reviews Section -->
   <div class="mt-16 bg-white rounded-xl border border-gray-100 shadow-sm p-8">
