@@ -20,3 +20,81 @@
 {% endblock %}
 
 
+{% extends 'store/base.html' %}
+{% block title %}Contact · Prachi's Organics{% endblock %}
+{% block content %}
+<section class="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-b from-white to-[#f9f9f7]">
+  <div class="w-full max-w-3xl bg-white/80 backdrop-blur-lg shadow-lg rounded-2xl p-8 transition-transform duration-500 hover:shadow-2xl hover:-translate-y-1">
+    
+    <h1 class="font-serif text-4xl text-center text-brandBrown mb-4 animate-fadeIn">Get in Touch</h1>
+    <p class="text-center text-gray-600 mb-10 animate-fadeIn text-sm sm:text-base">
+      We’re here for you! For any questions, concerns, or assistance, please contact us below — we’d love to hear from you.
+    </p>
+
+    <form method="post" class="space-y-5 animate-slideUp">{% csrf_token %}
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">Name</label>
+        <input name="name" class="w-full border border-gray-300 focus:border-brandGreen rounded-lg px-3 py-2 outline-none transition-all duration-200 focus:ring-2 focus:ring-brandGreen" required>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">Email</label>
+        <input name="email" type="email" class="w-full border border-gray-300 focus:border-brandGreen rounded-lg px-3 py-2 outline-none transition-all duration-200 focus:ring-2 focus:ring-brandGreen" required>
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">Subject</label>
+        <input name="subject" class="w-full border border-gray-300 focus:border-brandGreen rounded-lg px-3 py-2 outline-none transition-all duration-200 focus:ring-2 focus:ring-brandGreen">
+      </div>
+
+      <div class="flex flex-col">
+        <label class="text-sm font-medium text-gray-600 mb-1">Message</label>
+        <textarea name="message" class="w-full border border-gray-300 focus:border-brandGreen rounded-lg px-3 py-2 outline-none transition-all duration-200 focus:ring-2 focus:ring-brandGreen" rows="5" required></textarea>
+      </div>
+
+      <div class="flex justify-center">
+        <button class="bg-brandGreen text-white px-8 py-3 rounded-full font-medium shadow-md transition-all duration-300 hover:bg-green-700 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0" type="submit">
+          Send Message
+        </button>
+      </div>
+    </form>
+
+    <!-- Contact Information Section -->
+    <div class="mt-12 border-t pt-8 animate-fadeIn">
+      <h2 class="font-serif text-2xl text-center text-brandBrown mb-4">Our Contact Information</h2>
+      <div class="text-gray-700 text-sm sm:text-base leading-relaxed space-y-2 text-center">
+        <p>📩 <strong>Email:</strong> <a href="mailto:support@prachisorganics.com" class="text-brandGreen hover:underline">support@prachisorganics.com</a></p>
+        <p>🌐 <strong>Website:</strong> <a href="https://www.prachisorganics.com" class="text-brandGreen hover:underline">www.prachisorganics.com</a></p>
+        <p>Thank you for choosing <strong>Prachi’s Organics</strong> — we hope your experience is as pure and delightful as our products!</p>
+
+        <div class="mt-6">
+          <p class="font-semibold text-brandBrown">Address:</p>
+          <p>Prachi’s Organics<br>
+          Shop No. 8, Anantchaya,<br>
+          Khadi Machine, Kokan Nagar,<br>
+          Bhandup West, Opp. Bus Depot,<br>
+          Mumbai, Maharashtra, India</p>
+        </div>
+
+        <div class="mt-4 text-sm">
+          <p><strong>Manufactured & Marketed by:</strong> Prachi’s Organics</p>
+          <p><strong>Country of Origin:</strong> India</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeIn { animation: fadeIn 0.8s ease-out; }
+.animate-slideUp { animation: slideUp 0.8s ease-out 0.1s both; }
+</style>
+{% endblock %}
