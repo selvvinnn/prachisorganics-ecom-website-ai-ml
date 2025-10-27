@@ -32,56 +32,56 @@
       <div class="mt-8">
         <div class="text-sm text-gray-600">Category: {{ product.category.name }}</div>
 
-<div class="mt-8 pt-6 border-t border-gray-200">
-    {% if product.what_makes_it_potent %}
-      <details class="group border-b border-gray-200 pb-4">
-        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-          What Makes It Potent?
-          <span class="detail-icon">+</span>
-        </summary>
-        <div class="mt-3 space-y-2 text-gray-700 text-sm leading-relaxed">
-          {{ product.what_makes_it_potent|linebreaks }}
-        </div>
-      </details>
-    {% endif %}
+<div class="mt-10 pt-6 border-t border-gray-200 space-y-6">
+  {% if product.what_makes_it_potent %}
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        What Makes It Potent?
+        <span class="detail-icon">+</span>
+      </summary>
+      <div class="mt-3 text-gray-700 text-sm leading-relaxed">
+        {{ product.what_makes_it_potent|linebreaks }}
+      </div>
+    </details>
+  {% endif %}
 
-    {% if product.ideal_for %}
-      <details class="product-detail group border-b border-gray-200 pb-4">
-        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-          Ideal For
-          <span class="detail-icon">+</span>
-        </summary>
-        <div class="mt-2 text-gray-700 text-sm">
-          {{ product.ideal_for|linebreaks }}
-        </div>
-      </details>
-    {% endif %}
+  {% if product.ideal_for %}
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        Ideal For
+        <span class="detail-icon">+</span>
+      </summary>
+      <div class="mt-3 text-gray-700 text-sm leading-relaxed">
+        {{ product.ideal_for|linebreaks }}
+      </div>
+    </details>
+  {% endif %}
 
-    {% if product.how_to_use %}
-      <details class="product-detail group border-b border-gray-200 pb-4">
-        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-          How to Use
-          <span class="detail-icon">+</span>
-        </summary>
-        <div class="mt-2 text-gray-700 text-sm">
-          {{ product.how_to_use|linebreaks }}
-        </div>
-      </details>
-    {% endif %}
+  {% if product.how_to_use %}
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        How to Use
+        <span class="detail-icon">+</span>
+      </summary>
+      <div class="mt-3 text-gray-700 text-sm leading-relaxed">
+        {{ product.how_to_use|linebreaks }}
+      </div>
+    </details>
+  {% endif %}
 
-    {% if product.consumer_studies %}
-      <details class="product-detail group border-b border-gray-200 pb-4">
-        <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
-          Consumer Studies
-          <span class="detail-icon">+</span>
-        </summary>
-        <div class="mt-2 text-gray-700 text-sm">
-          {{ product.consumer_studies|linebreaks }}
-        </div>
-      </details>
-    {% endif %}
+  {% if product.consumer_studies %}
+    <details class="group border-b border-gray-200 pb-4">
+      <summary class="flex justify-between items-center cursor-pointer font-semibold text-lg list-none">
+        Consumer Studies
+        <span class="detail-icon">+</span>
+      </summary>
+      <div class="mt-3 text-gray-700 text-sm leading-relaxed">
+        {{ product.consumer_studies|linebreaks }}
+      </div>
+    </details>
+  {% endif %}
+</div>
 
-  </div>
 </div>
 
     </div>
