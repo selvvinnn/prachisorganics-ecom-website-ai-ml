@@ -111,35 +111,35 @@ referrerpolicy="no-referrer" />
                     </form>
                 </div>
             </div>
-            <div class="col-span-12 md:col-span-3 flex items-center justify-end gap-4 md:gap-5">
+           <div class="flex items-center justify-end flex-wrap gap-3 sm:gap-4 md:gap-5 text-brandBrown text-lg w-full md:w-auto z-50">
                 <div class="flex items-center gap-3 text-brandBrown text-lg">
                     <a aria-label="Instagram" href="{{ site_settings.instagram_url|default:'#' }}" target="_blank" rel="noopener" class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen"><i class="brands instagram"></i></a>
                     <a aria-label="Facebook" href="{{ site_settings.facebook_url|default:'#' }}" target="_blank" rel="noopener" class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen"><i class="brands facebook"></i></a>
                     <a aria-label="Twitter" href="{{ site_settings.twitter_url|default:'#' }}" target="_blank" rel="noopener" class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen"><i class="brands twitter"></i></a>
                 </div>
-              <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 sm:gap-4">
                 {% if request.user.is_authenticated %}
-                  <a href="/profile/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-regular fa-user text-base sm:text-lg"></i>
+                  <a href="/profile/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen">
+                    <i class="fa-regular fa-user text-lg sm:text-xl"></i>
                     <span class="hidden sm:inline text-sm md:text-base">Account</span>
                   </a>
-                  <a href="/logout/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-solid fa-right-from-bracket text-base sm:text-lg"></i>
+                  <a href="/logout/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen">
+                    <i class="fa-solid fa-right-from-bracket text-lg sm:text-xl"></i>
                     <span class="hidden sm:inline text-sm md:text-base">Logout</span>
                   </a>
                 {% else %}
-                  <a href="/login/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-regular fa-user text-base sm:text-lg"></i>
+                  <a href="/login/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen">
+                    <i class="fa-regular fa-user text-lg sm:text-xl"></i>
                     <span class="hidden sm:inline text-sm md:text-base">Login</span>
                   </a>
-                  <a href="/signup/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-solid fa-user-plus text-base sm:text-lg"></i>
+                  <a href="/signup/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen">
+                    <i class="fa-solid fa-user-plus text-lg sm:text-xl"></i>
                     <span class="hidden sm:inline text-sm md:text-base">Sign Up</span>
                   </a>
                 {% endif %}
 
-                <a href="/cart/" class="relative flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                  <i class="fa-solid fa-cart-shopping text-base sm:text-lg"></i>
+                <a href="/cart/" class="relative flex items-center gap-1 sm:gap-2 hover:text-brandGreen">
+                  <i class="fa-solid fa-cart-shopping text-lg sm:text-xl"></i>
                   <span class="hidden sm:inline text-sm md:text-base">Cart</span>
                 </a>
               </div>
