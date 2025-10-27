@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Font Awesome CDN -->
   <link
 rel="stylesheet"
@@ -111,39 +112,98 @@ referrerpolicy="no-referrer" />
                     </form>
                 </div>
             </div>
-           <div class="flex items-center justify-end flex-wrap gap-3 sm:gap-4 md:gap-5 text-brandBrown text-lg w-full md:w-auto z-50">
-                <div class="flex items-center gap-3 text-brandBrown text-lg">
-                    <a aria-label="Instagram" href="{{ site_settings.instagram_url|default:'#' }}" target="_blank" rel="noopener" class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen"><i class="brands instagram"></i></a>
-                    <a aria-label="Facebook" href="{{ site_settings.facebook_url|default:'#' }}" target="_blank" rel="noopener" class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen"><i class="brands facebook"></i></a>
-                    <a aria-label="Twitter" href="{{ site_settings.twitter_url|default:'#' }}" target="_blank" rel="noopener" class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen"><i class="brands twitter"></i></a>
-                </div>
-              <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+
+            <!-- Desktop: Inline links (visible md+) -->
+            <div class="hidden md:flex items-center gap-4">
+              {% if request.user.is_authenticated %}
+                <a href="/profile/" class="flex items-center gap-2 hover:text-brandGreen transition">
+                  <i class="fa-regular fa-user text-lg"></i><span class="hidden md:inline">Account</span>
+                </a>
+                <a href="/logout/" class="flex items-center gap-2 hover:text-brandGreen transition">
+                  <i class="fa-solid fa-right-from-bracket text-lg"></i><span class="hidden md:inline">Logout</span>
+                </a>
+              {% else %}
+                <a href="/login/" class="flex items-center gap-2 hover:text-brandGreen transition">
+                  <i class="fa-regular fa-user text-lg"></i><span class="hidden md:inline">Login</span>
+                </a>
+                <a href="/signup/" class="flex items-center gap-2 hover:text-brandGreen transition">
+                  <i class="fa-solid fa-user-plus text-lg"></i><span class="hidden md:inline">Sign Up</span>
+                </a>
+              {% endif %}
+              <a href="/cart/" class="relative flex items-center gap-2 hover:text-brandGreen transition">
+                <i class="fa-solid fa-cart-shopping text-lg"></i><span class="hidden md:inline">Cart</span>
+              </a>
+            </div>
+
+            <!-- Mobile: Hamburger button (visible < md) -->
+            <div class="md:hidden">
+              <button id="mobile-menu-toggle"
+                      aria-controls="mobile-menu"
+                      aria-expanded="false"
+                      class="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-brandGreen"
+                      title="Menu">
+                <!-- Simple hamburger icon -->
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile sliding panel (hidden by default) -->
+          <div id="mobile-menu"
+              class="fixed inset-0 z-50 pointer-events-none">
+            <!-- Backdrop -->
+            <div id="mobile-menu-backdrop"
+                class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"
+                aria-hidden="true"></div>
+
+            <!-- Panel: slides from right -->
+            <aside id="mobile-menu-panel"
+                  class="absolute top-0 right-0 h-full w-72 max-w-full bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out">
+              <div class="p-4 flex items-center justify-between border-b">
+                <div class="text-lg font-semibold">Menu</div>
+                <button id="mobile-menu-close" class="p-2 rounded hover:bg-gray-100 focus:outline-none" aria-label="Close menu">
+                  <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                  </svg>
+                </button>
+              </div>
+
+              <nav class="p-4 space-y-3">
                 {% if request.user.is_authenticated %}
-                  <a href="/profile/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-regular fa-user text-base sm:text-lg"></i>
-                    <span class="hidden sm:inline text-sm md:text-base">Account</span>
+                  <a href="/profile/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+                    <i class="fa-regular fa-user text-lg"></i>
+                    <span>Account</span>
                   </a>
-                  <a href="/logout/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-solid fa-right-from-bracket text-base sm:text-lg"></i>
-                    <span class="hidden sm:inline text-sm md:text-base">Logout</span>
+                  <a href="/logout/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                    <span>Logout</span>
                   </a>
                 {% else %}
-                  <a href="/login/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-regular fa-user text-base sm:text-lg"></i>
-                    <span class="hidden sm:inline text-sm md:text-base">Login</span>
+                  <a href="/login/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+                    <i class="fa-regular fa-user text-lg"></i>
+                    <span>Login</span>
                   </a>
-                  <a href="/signup/" class="flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                    <i class="fa-solid fa-user-plus text-base sm:text-lg"></i>
-                    <span class="hidden sm:inline text-sm md:text-base">Sign Up</span>
+                  <a href="/signup/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+                    <i class="fa-solid fa-user-plus text-lg"></i>
+                    <span>Sign Up</span>
                   </a>
                 {% endif %}
 
-                <a href="/cart/" class="relative flex items-center gap-1 sm:gap-2 hover:text-brandGreen transition">
-                  <i class="fa-solid fa-cart-shopping text-base sm:text-lg"></i>
-                  <span class="hidden sm:inline text-sm md:text-base">Cart</span>
+                <a href="/cart/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
+                  <i class="fa-solid fa-cart-shopping text-lg"></i>
+                  <span>Cart</span>
                 </a>
+              </nav>
+
+              <!-- optional extras -->
+              <div class="absolute bottom-0 left-0 w-full p-4 border-t">
+                <a href="/contact/" class="block text-center text-sm text-gray-600 hover:text-brandGreen">Contact</a>
               </div>
-            </div>
+            </aside>
+          </div>
             <nav class="col-span-12 hidden md:flex gap-4 md:gap-6 pt-2 ">
                 <div class="group relative">
                     <a class="hover:text-brandGreen" href="/products/?category=skin-care">Face</a>
@@ -301,6 +361,66 @@ referrerpolicy="no-referrer" />
       }
       .animate-fade-up { animation: fadeUp .7s ease-out both; }
     </style>
-    
+
+
+      <script>
+      (function() {
+        const toggleBtn = document.getElementById('mobile-menu-toggle');
+        const closeBtn = document.getElementById('mobile-menu-close');
+        const menu = document.getElementById('mobile-menu');
+        const panel = document.getElementById('mobile-menu-panel');
+        const backdrop = document.getElementById('mobile-menu-backdrop');
+
+        if (!toggleBtn || !panel || !menu) return;
+
+        function openMenu() {
+          menu.classList.remove('pointer-events-none');
+          backdrop.classList.remove('opacity-0');
+          backdrop.classList.add('opacity-100');
+          panel.classList.remove('translate-x-full');
+          panel.classList.add('translate-x-0');
+          toggleBtn.setAttribute('aria-expanded', 'true');
+          document.body.style.overflow = 'hidden'; // prevent body scroll
+          // focus first link for accessibility
+          const firstLink = menu.querySelector('nav a');
+          if (firstLink) firstLink.focus();
+          // close on escape
+          document.addEventListener('keydown', onKeyDown);
+        }
+
+        function closeMenu() {
+          backdrop.classList.remove('opacity-100');
+          backdrop.classList.add('opacity-0');
+          panel.classList.remove('translate-x-0');
+          panel.classList.add('translate-x-full');
+          toggleBtn.setAttribute('aria-expanded', 'false');
+          setTimeout(() => {
+            menu.classList.add('pointer-events-none');
+            document.body.style.overflow = ''; // restore body scroll
+          }, 300);
+          document.removeEventListener('keydown', onKeyDown);
+        }
+
+        function onKeyDown(e) {
+          if (e.key === 'Escape') closeMenu();
+        }
+
+        toggleBtn.addEventListener('click', function(e) {
+          const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+          if (expanded) closeMenu(); else openMenu();
+        });
+
+        closeBtn && closeBtn.addEventListener('click', closeMenu);
+
+        // click on backdrop to close
+        backdrop && backdrop.addEventListener('click', closeMenu);
+
+        // close if link clicked (optional) - keep nav usable
+        menu.querySelectorAll('nav a').forEach(a => {
+          a.addEventListener('click', closeMenu);
+        });
+      })();
+      </script>
+
 </body>
 </html>
