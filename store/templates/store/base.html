@@ -152,8 +152,8 @@ referrerpolicy="no-referrer" />
           </div>
 
           <!-- Mobile sliding panel (hidden by default) -->
-          <div id="mobile-menu"
-              class="fixed top-0 left-0 w-full h-full z-50 bg-white shadow-lg hidden transition-all duration-300 ease-in-out">
+          <div id="mobileMenu" class="fixed top-0 right-0 w-3/4 h-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+
             <!-- Backdrop -->
             <div id="mobile-menu-backdrop"
                 class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"
@@ -363,64 +363,64 @@ referrerpolicy="no-referrer" />
     </style>
 
 
-      <script>
-      (function() {
-        const toggleBtn = document.getElementById('mobile-menu-toggle');
-        const closeBtn = document.getElementById('mobile-menu-close');
-        const menu = document.getElementById('mobile-menu');
-        const panel = document.getElementById('mobile-menu-panel');
-        const backdrop = document.getElementById('mobile-menu-backdrop');
+    <script>
+    (function() {
+      const toggleBtn = document.getElementById('mobile-menu-toggle');
+      const closeBtn = document.getElementById('mobile-menu-close');
+      const menu = document.getElementById('mobile-menu');
+      const panel = document.getElementById('mobile-menu-panel');
+      const backdrop = document.getElementById('mobile-menu-backdrop');
 
-        if (!toggleBtn || !panel || !menu) return;
+      if (!toggleBtn || !panel || !menu) return;
 
-        function openMenu() {
-          menu.classList.remove('pointer-events-none');
-          backdrop.classList.remove('opacity-0');
-          backdrop.classList.add('opacity-100');
-          panel.classList.remove('translate-x-full');
-          panel.classList.add('translate-x-0');
-          toggleBtn.setAttribute('aria-expanded', 'true');
-          document.body.style.overflow = 'hidden'; // prevent body scroll
-          // focus first link for accessibility
-          const firstLink = menu.querySelector('nav a');
-          if (firstLink) firstLink.focus();
-          // close on escape
-          document.addEventListener('keydown', onKeyDown);
-        }
+      function openMenu() {
+        menu.classList.remove('pointer-events-none');
+        backdrop.classList.remove('opacity-0');
+        backdrop.classList.add('opacity-100');
+        panel.classList.remove('translate-x-full');
+        panel.classList.add('translate-x-0');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden'; // prevent body scroll
+        // focus first link for accessibility
+        const firstLink = menu.querySelector('nav a');
+        if (firstLink) firstLink.focus();
+        // close on escape
+        document.addEventListener('keydown', onKeyDown);
+      }
 
-        function closeMenu() {
-          backdrop.classList.remove('opacity-100');
-          backdrop.classList.add('opacity-0');
-          panel.classList.remove('translate-x-0');
-          panel.classList.add('translate-x-full');
-          toggleBtn.setAttribute('aria-expanded', 'false');
-          setTimeout(() => {
-            menu.classList.add('pointer-events-none');
-            document.body.style.overflow = ''; // restore body scroll
-          }, 300);
-          document.removeEventListener('keydown', onKeyDown);
-        }
+      function closeMenu() {
+        backdrop.classList.remove('opacity-100');
+        backdrop.classList.add('opacity-0');
+        panel.classList.remove('translate-x-0');
+        panel.classList.add('translate-x-full');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        setTimeout(() => {
+          menu.classList.add('pointer-events-none');
+          document.body.style.overflow = ''; // restore body scroll
+        }, 300);
+        document.removeEventListener('keydown', onKeyDown);
+      }
 
-        function onKeyDown(e) {
-          if (e.key === 'Escape') closeMenu();
-        }
+      function onKeyDown(e) {
+        if (e.key === 'Escape') closeMenu();
+      }
 
-        toggleBtn.addEventListener('click', function(e) {
-          const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-          if (expanded) closeMenu(); else openMenu();
-        });
+      toggleBtn.addEventListener('click', function(e) {
+        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+        if (expanded) closeMenu(); else openMenu();
+      });
 
-        closeBtn && closeBtn.addEventListener('click', closeMenu);
+      closeBtn && closeBtn.addEventListener('click', closeMenu);
 
-        // click on backdrop to close
-        backdrop && backdrop.addEventListener('click', closeMenu);
+      // click on backdrop to close
+      backdrop && backdrop.addEventListener('click', closeMenu);
 
-        // close if link clicked (optional) - keep nav usable
-        menu.querySelectorAll('nav a').forEach(a => {
-          a.addEventListener('click', closeMenu);
-        });
-      })();
-      </script>
+      // close if link clicked (optional) - keep nav usable
+      menu.querySelectorAll('nav a').forEach(a => {
+        a.addEventListener('click', closeMenu);
+      });
+    })();
+    </script>
 
 </body>
 </html>
