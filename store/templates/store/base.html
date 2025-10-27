@@ -115,95 +115,46 @@ referrerpolicy="no-referrer" />
           <div class="flex items-center gap-3">
 
             <!-- Desktop: Inline links (visible md+) -->
-            <div class="hidden md:flex items-center gap-4">
-              {% if request.user.is_authenticated %}
-                <a href="/profile/" class="flex items-center gap-2 hover:text-brandGreen transition">
-                  <i class="fa-regular fa-user text-lg"></i><span class="hidden md:inline">Account</span>
-                </a>
-                <a href="/logout/" class="flex items-center gap-2 hover:text-brandGreen transition">
-                  <i class="fa-solid fa-right-from-bracket text-lg"></i><span class="hidden md:inline">Logout</span>
-                </a>
-              {% else %}
-                <a href="/login/" class="flex items-center gap-2 hover:text-brandGreen transition">
-                  <i class="fa-regular fa-user text-lg"></i><span class="hidden md:inline">Login</span>
-                </a>
-                <a href="/signup/" class="flex items-center gap-2 hover:text-brandGreen transition">
-                  <i class="fa-solid fa-user-plus text-lg"></i><span class="hidden md:inline">Sign Up</span>
-                </a>
-              {% endif %}
-              <a href="/cart/" class="relative flex items-center gap-2 hover:text-brandGreen transition">
-                <i class="fa-solid fa-cart-shopping text-lg"></i><span class="hidden md:inline">Cart</span>
-              </a>
-            </div>
+<div class="hidden md:flex items-center gap-4 text-brandBrown">
+  {% if request.user.is_authenticated %}
+    <a href="/profile/" class="flex items-center gap-2 hover:text-brandGreen"><i class="fa-regular fa-user"></i> Account</a>
+    <a href="/logout/" class="flex items-center gap-2 hover:text-brandGreen"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+  {% else %}
+    <a href="/login/" class="flex items-center gap-2 hover:text-brandGreen"><i class="fa-regular fa-user"></i> Login</a>
+    <a href="/signup/" class="flex items-center gap-2 hover:text-brandGreen"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+  {% endif %}
+  <a href="/cart/" class="flex items-center gap-2 hover:text-brandGreen"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+</div>
 
-            <!-- Mobile: Hamburger button (visible < md) -->
-            <div class="md:hidden">
-              <button id="mobile-menu-toggle"
-                      aria-controls="mobile-menu"
-                      aria-expanded="false"
-                      class="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-brandGreen"
-                      title="Menu">
-                <!-- Simple hamburger icon -->
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h16"/>
-                </svg>
-              </button>
-            </div>
-          </div>
+<!-- 🌿 Mobile hamburger -->
+<div class="md:hidden flex items-center">
+  <button id="menu-toggle" class="text-brandBrown text-2xl focus:outline-none">
+    <i class="fa-solid fa-bars"></i>
+  </button>
+</div>
 
-          <!-- Mobile sliding panel (hidden by default) -->
-          <div id="mobileMenu" class="fixed top-0 right-0 w-3/4 h-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+<!-- 🌿 Mobile menu drawer -->
+<div id="mobileMenu" class="fixed top-0 right-0 w-3/4 h-full bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+  <div class="flex justify-between items-center p-4 border-b border-gray-200">
+    <span class="text-lg font-semibold text-brandBrown">Menu</span>
+    <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <div class="flex flex-col p-6 text-brandBrown text-lg space-y-6">
+    {% if request.user.is_authenticated %}
+      <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen"><i class="fa-regular fa-user"></i> Account</a>
+      <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    {% else %}
+      <a href="/login/" class="flex items-center gap-3 hover:text-brandGreen"><i class="fa-regular fa-user"></i> Login</a>
+      <a href="/signup/" class="flex items-center gap-3 hover:text-brandGreen"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+    {% endif %}
+    <a href="/cart/" class="flex items-center gap-3 hover:text-brandGreen"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+  </div>
+</div>
 
-            <!-- Backdrop -->
-            <div id="mobile-menu-backdrop"
-                class="absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300"
-                aria-hidden="true"></div>
-
-            <!-- Panel: slides from right -->
-            <aside id="mobile-menu-panel"
-                  class="absolute top-0 right-0 h-full w-72 max-w-full bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out">
-              <div class="p-4 flex items-center justify-between border-b">
-                <div class="text-lg font-semibold">Menu</div>
-                <button id="mobile-menu-close" class="p-2 rounded hover:bg-gray-100 focus:outline-none" aria-label="Close menu">
-                  <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                  </svg>
-                </button>
-              </div>
-
-              <nav class="p-4 space-y-3">
-                {% if request.user.is_authenticated %}
-                  <a href="/profile/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span>Account</span>
-                  </a>
-                  <a href="/logout/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
-                    <i class="fa-solid fa-right-from-bracket text-lg"></i>
-                    <span>Logout</span>
-                  </a>
-                {% else %}
-                  <a href="/login/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
-                    <i class="fa-regular fa-user text-lg"></i>
-                    <span>Login</span>
-                  </a>
-                  <a href="/signup/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
-                    <i class="fa-solid fa-user-plus text-lg"></i>
-                    <span>Sign Up</span>
-                  </a>
-                {% endif %}
-
-                <a href="/cart/" class="flex items-center gap-3 p-2 rounded hover:bg-gray-50 transition">
-                  <i class="fa-solid fa-cart-shopping text-lg"></i>
-                  <span>Cart</span>
-                </a>
-              </nav>
-
-              <!-- optional extras -->
-              <div class="absolute bottom-0 left-0 w-full p-4 border-t">
-                <a href="/contact/" class="block text-center text-sm text-gray-600 hover:text-brandGreen">Contact</a>
-              </div>
-            </aside>
-          </div>
+<!-- Optional dark backdrop -->
+<div id="menuBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"></div>
             <nav class="col-span-12 hidden md:flex gap-4 md:gap-6 pt-2 ">
                 <div class="group relative">
                     <a class="hover:text-brandGreen" href="/products/?category=skin-care">Face</a>
@@ -363,64 +314,28 @@ referrerpolicy="no-referrer" />
     </style>
 
 
-    <script>
-    (function() {
-      const toggleBtn = document.getElementById('mobile-menu-toggle');
-      const closeBtn = document.getElementById('mobile-menu-close');
-      const menu = document.getElementById('mobile-menu');
-      const panel = document.getElementById('mobile-menu-panel');
-      const backdrop = document.getElementById('mobile-menu-backdrop');
+ <script>
+  const menuToggle = document.getElementById('menu-toggle');
+  const menuClose = document.getElementById('menu-close');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const menuBackdrop = document.getElementById('menuBackdrop');
 
-      if (!toggleBtn || !panel || !menu) return;
+  menuToggle.addEventListener('click', () => {
+    mobileMenu.classList.remove('translate-x-full');
+    menuBackdrop.classList.remove('hidden');
+  });
 
-      function openMenu() {
-        menu.classList.remove('pointer-events-none');
-        backdrop.classList.remove('opacity-0');
-        backdrop.classList.add('opacity-100');
-        panel.classList.remove('translate-x-full');
-        panel.classList.add('translate-x-0');
-        toggleBtn.setAttribute('aria-expanded', 'true');
-        document.body.style.overflow = 'hidden'; // prevent body scroll
-        // focus first link for accessibility
-        const firstLink = menu.querySelector('nav a');
-        if (firstLink) firstLink.focus();
-        // close on escape
-        document.addEventListener('keydown', onKeyDown);
-      }
+  menuClose.addEventListener('click', () => {
+    mobileMenu.classList.add('translate-x-full');
+    menuBackdrop.classList.add('hidden');
+  });
 
-      function closeMenu() {
-        backdrop.classList.remove('opacity-100');
-        backdrop.classList.add('opacity-0');
-        panel.classList.remove('translate-x-0');
-        panel.classList.add('translate-x-full');
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        setTimeout(() => {
-          menu.classList.add('pointer-events-none');
-          document.body.style.overflow = ''; // restore body scroll
-        }, 300);
-        document.removeEventListener('keydown', onKeyDown);
-      }
+  menuBackdrop.addEventListener('click', () => {
+    mobileMenu.classList.add('translate-x-full');
+    menuBackdrop.classList.add('hidden');
+  });
+</script>
 
-      function onKeyDown(e) {
-        if (e.key === 'Escape') closeMenu();
-      }
-
-      toggleBtn.addEventListener('click', function(e) {
-        const expanded = toggleBtn.getAttribute('aria-expanded') === 'true';
-        if (expanded) closeMenu(); else openMenu();
-      });
-
-      closeBtn && closeBtn.addEventListener('click', closeMenu);
-
-      // click on backdrop to close
-      backdrop && backdrop.addEventListener('click', closeMenu);
-
-      // close if link clicked (optional) - keep nav usable
-      menu.querySelectorAll('nav a').forEach(a => {
-        a.addEventListener('click', closeMenu);
-      });
-    })();
-    </script>
 
 </body>
 </html>
