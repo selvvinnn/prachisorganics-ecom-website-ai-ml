@@ -45,7 +45,7 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'status', 'paid_amount', 'created_at', 'shipped', 'date_shipped']
+    list_display = ['id', 'user', 'razorpay_order_id','status', 'paid_amount', 'created_at', 'shipped', 'date_shipped']
     list_filter = ['status', 'created_at']
 
 @admin.register(OrderItem)
