@@ -168,7 +168,6 @@ class Order(models.Model):
     shipped = models.BooleanField(default=False)
     date_shipped = models.DateTimeField(blank=True, null=True)
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
-    razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self) -> str:
         return f"Order #{self.id} - {self.user.username}"
