@@ -18,7 +18,7 @@
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm mb-1">Email</label>
-            <input name="email" type="email" class="w-full border rounded px-3 py-2" required>
+            <input name="email" type="email" class="w-full border rounded px-3 py-2" required = "required">
           </div>
           <div class="md:col-span-2">
             <label class="block text-sm mb-1">Address</label>
@@ -64,7 +64,7 @@ var options = {
     "description": "Order Payment",
     "order_id": "{{ payment.id }}",
     "handler": function (response) {
-        fetch("{% url 'store:verify_payment' %", { // same URL (checkout_view)
+        fetch("{% url 'store:checkout_view' %", { // same URL (checkout_view)
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
