@@ -335,24 +335,30 @@ referrerpolicy="no-referrer" />
 
 
  <script>
-  const menuToggle = document.getElementById('menu-toggle');
-  const menuClose = document.getElementById('menu-close');
-  const mobileMenu = document.getElementById('mobileMenu');
-  const menuBackdrop = document.getElementById('menuBackdrop');
+  // Select elements
+  const menuToggle = document.getElementById("menu-toggle");
+  const menuClose = document.getElementById("menu-close");
+  const mobileMenu = document.getElementById("mobileMenu");
+  const menuBackdrop = document.getElementById("menuBackdrop");
 
-  function openMenu() {
-    mobileMenu.classList.remove('-translate-x-full');
-    menuBackdrop.classList.remove('hidden');
-  }
-  function closeMenu() {
-    mobileMenu.classList.add('-translate-x-full');
-    menuBackdrop.classList.add('hidden');
-  }
+  // Function to open menu
+  menuToggle?.addEventListener("click", () => {
+    mobileMenu.classList.remove("-translate-x-full");
+    mobileMenu.classList.add("translate-x-0");
+    menuBackdrop.classList.remove("hidden");
+  });
 
-  menuToggle.addEventListener('click', openMenu);
-  menuClose.addEventListener('click', closeMenu);
-  menuBackdrop.addEventListener('click', closeMenu);
+  // Function to close menu
+  const closeMenu = () => {
+    mobileMenu.classList.add("-translate-x-full");
+    mobileMenu.classList.remove("translate-x-0");
+    menuBackdrop.classList.add("hidden");
+  };
+
+  menuClose?.addEventListener("click", closeMenu);
+  menuBackdrop?.addEventListener("click", closeMenu);
 </script>
+
 
 
 
