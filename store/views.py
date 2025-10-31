@@ -412,6 +412,17 @@ def checkout_view(request):
 
     subtotal = sum([item.line_total() for item in items]) if items else 0
 
+    if request.method == 'POST':
+        # 🟢 Save checkout data into session
+        request.session['checkout_data'] = {
+            'first_name': request.POST.get('first_name'),
+            'last_name': request.POST.get('last_name'),
+            'email': request.POST.get('email'),
+            'address': request.POST.get('address'),
+            'zipcode': request.POST.get('zipcode'),
+            'city': request.POST.get('city'),
+        }
+        return redirect('store:checkout')
     # 🟢 Create Razorpay Order only on GET (page load)
     if request.method == 'GET':
         client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
@@ -581,7 +592,8 @@ def verify_payment(request):
                 city=checkout_data.get('city'),
                 paid_amount=sum([i.line_total() for i in items]),
                 status='processing',
-                razorpay_order_id=razorpay_order_id
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id
             )
 
             # 4️⃣ Transfer cart items → order items
