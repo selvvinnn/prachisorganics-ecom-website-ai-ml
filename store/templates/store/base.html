@@ -184,33 +184,42 @@ referrerpolicy="no-referrer" />
   </nav>
 
   <!-- 🌿 Mobile Menu Drawer -->
-  <div id="mobileMenu"
-       class="fixed top-0 left-0 w-3/4 h-full bg-white shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out">
-    <div class="flex justify-between items-center p-4 border-b border-gray-200">
-      <span class="text-lg font-semibold text-brandBrown">Menu</span>
-      <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="flex flex-col p-6 text-brandBrown text-lg space-y-6">
-      {% if request.user.is_authenticated %}
-        <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Account</a>
-        <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-      {% else %}
-        <a href="/login/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Login</a>
-        <a href="/signup/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
-      {% endif %}
-      <a href="/cart/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
-
-      <hr class="my-4 border-gray-300" />
-
-      <a href="/contact/" class="bg-brandGreen text-white py-2 rounded-lg text-center hover:bg-[#6f9213] transition">Contact Us</a>
-    </div>
+<!-- 🌿 Mobile Menu Drawer -->
+<div
+  id="mobileMenu"
+  class="fixed top-0 left-0 w-3/4 max-w-sm h-full bg-white shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out md:hidden overflow-y-auto"
+>
+  <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+    <span class="text-lg font-semibold text-brandBrown">Menu</span>
+    <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
   </div>
 
-  <!-- Dark overlay -->
-  <div id="menuBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40"></div>
+  <div class="flex flex-col p-6 text-brandBrown text-lg space-y-6">
+    {% if request.user.is_authenticated %}
+      <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Account</a>
+      <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+    {% else %}
+      <a href="/login/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Login</a>
+      <a href="/signup/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+    {% endif %}
+    <a href="/cart/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+
+    <hr class="my-4 border-gray-300" />
+
+    <a href="/products/?category=skin-care" class="hover:text-brandGreen">Face</a>
+    <a href="/products/?category=hair-care" class="hover:text-brandGreen">Hair</a>
+    <a href="/products/?category=body-care" class="hover:text-brandGreen">Body</a>
+    <a href="/combos/" class="hover:text-brandGreen">Combos</a>
+    <a href="/about/" class="hover:text-brandGreen">About Us</a>
+    <a href="/contact/" class="bg-brandGreen text-white py-2 rounded-lg text-center hover:bg-[#6f9213] transition">Contact Us</a>
+  </div>
+</div>
+
+<!-- Overlay -->
+<div id="menuBackdrop" class="fixed inset-0 bg-black bg-opacity-40 hidden z-40 md:hidden"></div>
+
 </header>
 
 
@@ -335,29 +344,33 @@ referrerpolicy="no-referrer" />
 
 
  <script>
-  // Select elements
-  const menuToggle = document.getElementById("menu-toggle");
-  const menuClose = document.getElementById("menu-close");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const menuBackdrop = document.getElementById("menuBackdrop");
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuToggle = document.getElementById("menu-toggle");
+    const menuClose = document.getElementById("menu-close");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const menuBackdrop = document.getElementById("menuBackdrop");
 
-  // Function to open menu
-  menuToggle?.addEventListener("click", () => {
-    mobileMenu.classList.remove("-translate-x-full");
-    mobileMenu.classList.add("translate-x-0");
-    menuBackdrop.classList.remove("hidden");
+    if (menuToggle && mobileMenu && menuBackdrop) {
+      menuToggle.addEventListener("click", () => {
+        mobileMenu.classList.remove("-translate-x-full");
+        mobileMenu.classList.add("translate-x-0");
+        menuBackdrop.classList.remove("hidden");
+        document.body.style.overflow = "hidden"; // prevent scroll behind menu
+      });
+
+      const closeMenu = () => {
+        mobileMenu.classList.add("-translate-x-full");
+        mobileMenu.classList.remove("translate-x-0");
+        menuBackdrop.classList.add("hidden");
+        document.body.style.overflow = ""; // restore scroll
+      };
+
+      menuClose?.addEventListener("click", closeMenu);
+      menuBackdrop?.addEventListener("click", closeMenu);
+    }
   });
-
-  // Function to close menu
-  const closeMenu = () => {
-    mobileMenu.classList.add("-translate-x-full");
-    mobileMenu.classList.remove("translate-x-0");
-    menuBackdrop.classList.add("hidden");
-  };
-
-  menuClose?.addEventListener("click", closeMenu);
-  menuBackdrop?.addEventListener("click", closeMenu);
 </script>
+
 
 
 
