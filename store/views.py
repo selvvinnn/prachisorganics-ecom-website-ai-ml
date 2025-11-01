@@ -412,18 +412,7 @@ def checkout_view(request):
 
     subtotal = sum([item.line_total() for item in items]) if items else 0
 
-    if request.method == 'POST':
-        
-        # 🟢 Save checkout data into session
-        request.session['checkout_data'] = {
-            'first_name': request.POST.get('first_name'),
-            'last_name': request.POST.get('last_name'),
-            'email': request.POST.get('email'),
-            'address': request.POST.get('address'),
-            'zipcode': request.POST.get('zipcode'),
-            'city': request.POST.get('city'),
-        }
-        return redirect('store:checkout')
+    
     # 🟢 Create Razorpay Order only on GET (page load)
     if request.method == 'GET':
         client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
