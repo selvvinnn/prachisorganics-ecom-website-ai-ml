@@ -1,6 +1,6 @@
 {% extends 'store/base.html' %}
 {% load currency %}
-{% block title %}Checkout · Prachi's Organics{% endblock %}
+{% block title %}Checkout Â· Prachi's Organics{% endblock %}
 {% block content %}
 <section class="container mx-auto px-4 py-10">
   <h1 class="font-serif text-3xl mb-6">Checkout</h1>
@@ -60,11 +60,11 @@ var options = {
     "key": "rzp_live_RYXIOhLxjO9TQW", // Replace with your Razorpay key
     "amount": "{{ payment.amount }}",
     "currency": "INR",
-    "name": "Prachi's Organics",
+    "name": "Prachi's Organic",
     "description": "Order Payment",
     "order_id": "{{ payment.id }}",
     "handler": function (response) {
-        fetch({""}, { // same URL (checkout_view)
+        fetch("", { // same URL (checkout_view)
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
