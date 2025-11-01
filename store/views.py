@@ -434,12 +434,22 @@ def checkout_view(request):
     # 🟢 Verify Razorpay payment and create Order
     elif request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            # ✅ Read payment data safely from POST
+            data = request.POST or json.loads(request.body.decode('utf-8'))
+
+            razorpay_order_id = data.get('razorpay_order_id')
+            razorpay_payment_id = data.get('razorpay_payment_id')
+            razorpay_signature = data.get('razorpay_signature')
+
+            if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
+                return JsonResponse({'status': 'failure', 'message': 'Missing Razorpay payment details'})
+
+            # ✅ Verify payment signature
             client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
             client.utility.verify_payment_signature({
-                'razorpay_order_id': data['razorpay_order_id'],
-                'razorpay_payment_id': data['razorpay_payment_id'],
-                'razorpay_signature': data['razorpay_signature']
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
             })
 
             # ✅ Payment verified — Create Order in DB
@@ -448,15 +458,15 @@ def checkout_view(request):
                 first_name=request.user.first_name,
                 last_name=request.user.last_name,
                 email=request.user.email,
-                address=request.user.profile.address if hasattr(request.user, 'profile') else '',
-                city=request.user.profile.city if hasattr(request.user, 'profile') else '',
-                zipcode=request.user.profile.zipcode if hasattr(request.user, 'profile') else '',
+                address=getattr(request.user, 'address', ''),
+                city=getattr(request.user, 'city', ''),
+                zipcode=getattr(request.user, 'zipcode', ''),
                 paid_amount=subtotal,
                 status='processing',
-                razorpay_order_id=data['razorpay_order_id']
+                razorpay_order_id=razorpay_order_id
             )
 
-            # ✅ Save order items (optional if you have OrderItem model)
+            # ✅ Save each item
             for item in items:
                 OrderItem.objects.create(
                     order=order,
@@ -472,7 +482,8 @@ def checkout_view(request):
             return JsonResponse({'status': 'success', 'redirect_url': '/order-success/'})
 
         except Exception as e:
-            return JsonResponse({'status': 'failure', 'message': str(e)})
+            print("Payment verification failed:", str(e))  # log error for debugging
+            return JsonResponse({'status': 'failure', 'message': f'Payment verification failed: {str(e)}'})
 
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
 

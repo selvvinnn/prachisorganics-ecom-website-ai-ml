@@ -64,7 +64,7 @@ var options = {
     "description": "Order Payment",
     "order_id": "{{ payment.id }}",
     "handler": function (response) {
-        fetch("{% url 'store:verify_payment' %}", { // same URL (checkout_view)
+        fetch("/checkout/", { // same URL (checkout_view)
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
