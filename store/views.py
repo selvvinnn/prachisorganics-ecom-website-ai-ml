@@ -404,7 +404,7 @@ from django.conf import settings
 import razorpay
 @login_required
 def checkout_view(request):
-    cart,  = Cart.objects.get_or_create(user=request.user)
+    cart, _ = Cart.objects.get_or_create(user=request.user)
     items = cart.items.select_related('product').all()
     if not items:
         messages.error(request, 'Your cart is empty.')
@@ -431,7 +431,7 @@ def checkout_view(request):
         }
         return render(request, 'store/checkout.html', context)
 
-    # 🟢 Verify Razorpay payment and redirect to success
+    # 🟢 Verify Razorpay payment and create Order
     elif request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -442,8 +442,32 @@ def checkout_view(request):
                 'razorpay_signature': data['razorpay_signature']
             })
 
-            # ✅ Payment verified — clear cart and redirect to success
+            # ✅ Payment verified — Create Order in DB
+            order = Order.objects.create(
+                user=request.user,
+                first_name=request.user.first_name,
+                last_name=request.user.last_name,
+                email=request.user.email,
+                address=request.user.profile.address if hasattr(request.user, 'profile') else '',
+                city=request.user.profile.city if hasattr(request.user, 'profile') else '',
+                zipcode=request.user.profile.zipcode if hasattr(request.user, 'profile') else '',
+                paid_amount=subtotal,
+                status='processing',
+                razorpay_order_id=data['razorpay_order_id']
+            )
+
+            # ✅ Save order items (optional if you have OrderItem model)
+            for item in items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    price=item.product.price,
+                    quantity=item.quantity
+                )
+
+            # ✅ Clear cart
             cart.items.all().delete()
+
             messages.success(request, "Payment successful! Order placed.")
             return JsonResponse({'status': 'success', 'redirect_url': '/order-success/'})
 
@@ -451,6 +475,7 @@ def checkout_view(request):
             return JsonResponse({'status': 'failure', 'message': str(e)})
 
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
+
 
 @login_required
 def update_cart(request, item_id):
