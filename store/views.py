@@ -404,7 +404,7 @@ from django.conf import settings
 import razorpay
 @login_required
 def checkout_view(request):
-    cart, _ = Cart.objects.get_or_create(user=request.user)
+    cart,  = Cart.objects.get_or_create(user=request.user)
     items = cart.items.select_related('product').all()
     if not items:
         messages.error(request, 'Your cart is empty.')
@@ -412,7 +412,6 @@ def checkout_view(request):
 
     subtotal = sum([item.line_total() for item in items]) if items else 0
 
-    
     # 🟢 Create Razorpay Order only on GET (page load)
     if request.method == 'GET':
         client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))

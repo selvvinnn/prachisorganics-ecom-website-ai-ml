@@ -45,8 +45,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'razorpay_order_id','status', 'paid_amount', 'created_at', 'shipped', 'date_shipped']
-    list_filter = ['status', 'created_at']
+    list_display = ('id', 'user', 'paid_amount', 'status', 'razorpay_order_id', 'razorpay_payment_id', 'created_at')
+    search_fields = ('razorpay_order_id', 'razorpay_payment_id', 'user__username', 'email')
+    readonly_fields = ('razorpay_order_id', 'razorpay_payment_id', 'razorpay_payment_status', 'created_at')
 
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
