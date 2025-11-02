@@ -462,16 +462,16 @@ def checkout_view(request):
 
             # ✅ Payment verified — Create Order in DB
             order = Order.objects.create(
-                user=request.user,
-                first_name=request.user.first_name,
-                last_name=request.user.last_name,
-                email=request.user.email,
-                address=getattr(request.user, 'address', ''),
-                city=getattr(request.user, 'city', ''),
-                zipcode=getattr(request.user, 'zipcode', ''),
-                paid_amount=subtotal,
-                status='processing',
-                razorpay_order_id=razorpay_order_id
+                user=request.user if request.user.is_authenticated else None,
+                first_name=data.get("first_name"),
+                last_name=data.get("last_name"),
+                email=data.get("email"),
+                address=data.get("address"),
+                zipcode=data.get("zipcode"),
+                city=data.get("city"),
+                paid_amount=float("{{ subtotal|default:0 }}") if "{{ subtotal|default:0 }}" else 0,
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
             )
 
             # ✅ Save each item
