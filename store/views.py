@@ -469,7 +469,7 @@ def checkout_view(request):
                 address=data.get("address"),
                 zipcode=data.get("zipcode"),
                 city=data.get("city"),
-                paid_amount=float("{{ subtotal|default:0 }}") if "{{ subtotal|default:0 }}" else 0,
+                paid_amount=subtotal,
                 razorpay_order_id=razorpay_order_id,
                 razorpay_payment_id=razorpay_payment_id,
             )
