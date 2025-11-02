@@ -427,7 +427,15 @@ def checkout_view(request):
             'cart': cart,
             'payment': payment,
             'items': items,
-            'subtotal': subtotal
+            'subtotal': subtotal,
+            'checkout_data': {
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email,
+                'address': getattr(request.user, 'address', ''),
+                'city': getattr(request.user, 'city', ''),
+                'zipcode': getattr(request.user, 'zipcode', ''),
+            }
         }
         return render(request, 'store/checkout.html', context)
 

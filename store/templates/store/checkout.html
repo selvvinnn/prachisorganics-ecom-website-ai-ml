@@ -60,9 +60,13 @@ var options = {
     "key": "rzp_live_RYXIOhLxjO9TQW", // Replace with your Razorpay key
     "amount": "{{ payment.amount }}",
     "currency": "INR",
-    "name": "Prachi's Organic",
+    "name": "Prachi's Organics",
     "description": "Order Payment",
     "order_id": "{{ payment.id }}",
+    "prefill": {
+      "name": "{{ checkout_data.first_name }} {{ checkout_data.last_name }}",
+      "email": "{{ checkout_data.email }}"
+    },
     "handler": function (response) {
         fetch("/checkout/", { // same URL (checkout_view)
             method: "POST",
