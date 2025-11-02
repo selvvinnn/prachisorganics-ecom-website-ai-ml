@@ -56,53 +56,70 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-var options = {
-    "key": "rzp_live_RYXIOhLxjO9TQW", // Replace with your Razorpay key
-    "amount": "{{ payment.amount }}",
-    "currency": "INR",
-    "name": "Prachi's Organics",
-    "description": "Order Payment",
-    "order_id": "{{ payment.id }}",
-    "prefill": {
-      "name": "{{ checkout_data.first_name }} {{ checkout_data.last_name }}",
-      "email": "{{ checkout_data.email }}"
-    },
-    "handler": function (response) {
-        fetch("/checkout/", { // same URL (checkout_view)
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": "{{ csrf_token }}"
-            },
-            body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature
-            })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success') {
-                window.location.href = data.redirect_url;
-            } else {
-                alert("Payment verification failed: " + data.message);
-            }
-        })
-        .catch(err => {
-            alert("Error verifying payment: " + err);
-        });
-    },
-    "theme": {
-        "color": "#3399cc"
-    }
-};
-var rzp1 = new Razorpay(options);
-
-document.getElementById('rzp-button1').onclick = function(e){
-    rzp1.open();
+document.getElementById('rzp-button1').addEventListener('click', function (e) {
     e.preventDefault();
-}
+
+    const form = document.querySelector('form');
+
+    // ✅ 1. Run HTML form validation
+    if (!form.checkValidity()) {
+        form.reportValidity();  // shows browser "Please fill this field" messages
+        return;  // stop here if validation fails
+    }
+
+    // ✅ 2. Gather all form data
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    // ✅ 3. Create Razorpay options dynamically
+    var options = {
+        "key": "rzp_live_RYXIOhLxjO9TQW", // your Razorpay key
+        "amount": "{{ payment.amount }}",
+        "currency": "INR",
+        "name": "Prachi's Organics",
+        "description": "Order Payment",
+        "order_id": "{{ payment.id }}",
+        "prefill": {
+            "name": data.first_name + " " + data.last_name,
+            "email": data.email,
+        },
+        "handler": function (response) {
+            // ✅ Combine payment + form data
+            data.razorpay_order_id = response.razorpay_order_id;
+            data.razorpay_payment_id = response.razorpay_payment_id;
+            data.razorpay_signature = response.razorpay_signature;
+
+            fetch("/checkout/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert("Payment verification failed: " + data.message);
+                }
+            })
+            .catch(err => {
+                alert("Error verifying payment: " + err);
+            });
+        },
+        "theme": {
+            "color": "#3399cc"
+        }
+    };
+
+    // ✅ 4. Open Razorpay only if form was valid
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+});
 </script>
+
 
 </section>
 {% endblock %}
