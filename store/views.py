@@ -442,19 +442,22 @@ def checkout_view(request):
     # 🟢 Verify Razorpay payment and create Order
     elif request.method == 'POST':
         try:
-            # ✅ Read payment + form data
-            data = request.POST or json.loads(request.body.decode('utf-8'))
+            body = request.body.decode('utf-8').strip()
+            if body:
+                data = json.loads(body)
+            else:
+                data = {}
 
             razorpay_order_id = data.get('razorpay_order_id')
             razorpay_payment_id = data.get('razorpay_payment_id')
             razorpay_signature = data.get('razorpay_signature')
 
-            first_name = data.get('first_name')
-            last_name = data.get('last_name')
-            email = data.get('email')
-            address = data.get('address')
-            zipcode = data.get('zipcode')
-            city = data.get('city')
+            first_name = (data.get('first_name') or '').strip()
+            last_name = (data.get('last_name') or '').strip()
+            email = (data.get('email') or '').strip()
+            address = (data.get('address') or '').strip()
+            zipcode = (data.get('zipcode') or '').strip()
+            city = (data.get('city') or '').strip()
 
             if not all([first_name, last_name, email, address, zipcode, city]):
                 return JsonResponse({'status': 'failure', 'message': 'Missing address details'})
