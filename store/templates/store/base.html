@@ -185,15 +185,15 @@ referrerpolicy="no-referrer" />
 
   <!-- 🌿 Mobile Menu Drawer -->
   <div id="mobileMenu"
-       class="fixed top-0 right-0 h-full w-full max-w-xs bg-white shadow-2xl z-[200] transform translate-x-full transition-transform duration-300 ease-in-out">
-    <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-white sticky top-0">
+       class="fixed inset-0 bg-white z-[200] transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+    <div class="flex justify-between items-center p-4 border-b border-gray-200 sticky top-0 bg-white">
       <span class="text-lg font-semibold text-brandBrown">Menu</span>
       <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
-    <div class="flex flex-col p-6 text-brandBrown text-base space-y-5 overflow-y-auto h-[calc(100%-64px)]">
+    <div class="flex flex-col p-6 text-brandBrown text-base space-y-5">
       {% if request.user.is_authenticated %}
         <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Account</a>
         <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -357,6 +357,7 @@ const menuBackdrop = document.getElementById("menuBackdrop");
   mobileMenu.classList.remove("translate-x-full");
   mobileMenu.classList.add("translate-x-0");
   menuBackdrop.classList.remove("hidden");
+  document.body.classList.add("overflow-hidden");
   });
 
   // Function to close menu
@@ -364,6 +365,7 @@ const menuBackdrop = document.getElementById("menuBackdrop");
   mobileMenu.classList.add("translate-x-full");
   mobileMenu.classList.remove("translate-x-0");
   menuBackdrop.classList.add("hidden");
+  document.body.classList.remove("overflow-hidden");
   };
 
   menuClose?.addEventListener("click", closeMenu);
