@@ -185,7 +185,7 @@ referrerpolicy="no-referrer" />
 
   <!-- 🌿 Mobile Menu Drawer -->
   <div id="mobileMenu"
-       class="fixed inset-0 h-full w-full overflow-y-auto bg-white z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+       class="fixed top-0 right-0 h-full w-full max-w-xs bg-white shadow-2xl z-[200] transform translate-x-full transition-transform duration-300 ease-in-out">
     <div class="flex justify-between items-center p-4 border-b border-gray-200 bg-white sticky top-0">
       <span class="text-lg font-semibold text-brandBrown">Menu</span>
       <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
@@ -193,7 +193,7 @@ referrerpolicy="no-referrer" />
       </button>
     </div>
 
-    <div class="flex flex-col p-6 text-brandBrown text-lg space-y-6">
+    <div class="flex flex-col p-6 text-brandBrown text-base space-y-5 overflow-y-auto h-[calc(100%-64px)]">
       {% if request.user.is_authenticated %}
         <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Account</a>
         <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
@@ -203,11 +203,24 @@ referrerpolicy="no-referrer" />
       {% endif %}
       <a href="/cart/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
 
-      <hr class="my-4 border-gray-300" />
+      <hr class="my-2 border-gray-300" />
+      <a href="/products/?category=skin-care" class="hover:text-brandGreen transition">Face Care</a>
+      <a href="/products/?category=hair-care" class="hover:text-brandGreen transition">Hair Care</a>
+      <a href="/products/?category=body-care" class="hover:text-brandGreen transition">Body Care</a>
+      <a href="/products/" class="hover:text-brandGreen transition">All Products</a>
+      <a href="/combos/" class="hover:text-brandGreen transition">Combos</a>
+      <a href="/track-order/" class="hover:text-brandGreen transition">Track Order</a>
+      <a href="/about/" class="hover:text-brandGreen transition">About</a>
+      <a href="/contact/" class="hover:text-brandGreen transition">Contact</a>
+      <a href="/terms/" class="hover:text-brandGreen transition">Terms & Conditions</a>
+      <a href="/privacy/" class="hover:text-brandGreen transition">Privacy Policy</a>
+      <a href="/returns/" class="hover:text-brandGreen transition">Return & Refund Policy</a>
 
       <a href="/contact/" class="bg-brandGreen text-white py-2 rounded-lg text-center hover:bg-[#6f9213] transition">Contact Us</a>
     </div>
   </div>
+
+  <div id="menuBackdrop" class="fixed inset-0 bg-black/40 hidden z-[190]"></div>
 
 </header>
 
@@ -337,20 +350,24 @@ referrerpolicy="no-referrer" />
   const menuToggle = document.getElementById("menu-toggle");
   const menuClose = document.getElementById("menu-close");
   const mobileMenu = document.getElementById("mobileMenu");
+const menuBackdrop = document.getElementById("menuBackdrop");
 
   // Function to open menu
   menuToggle?.addEventListener("click", () => {
   mobileMenu.classList.remove("translate-x-full");
   mobileMenu.classList.add("translate-x-0");
+  menuBackdrop.classList.remove("hidden");
   });
 
   // Function to close menu
   const closeMenu = () => {
   mobileMenu.classList.add("translate-x-full");
   mobileMenu.classList.remove("translate-x-0");
+  menuBackdrop.classList.add("hidden");
   };
 
   menuClose?.addEventListener("click", closeMenu);
+menuBackdrop?.addEventListener("click", closeMenu);
 </script>
 
 
