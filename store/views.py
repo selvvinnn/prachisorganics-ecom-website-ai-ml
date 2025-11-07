@@ -405,7 +405,7 @@ import razorpay
 @login_required
 def checkout_view(request):
     cart, _ = Cart.objects.get_or_create(user=request.user)
-    items = cart.items.select_related('product').all()
+    items = cart.items.select_related('product', 'combo_deal').all()
     if not items:
         messages.error(request, 'Your cart is empty.')
         return redirect('store:products')
@@ -442,12 +442,22 @@ def checkout_view(request):
     # 🟢 Verify Razorpay payment and create Order
     elif request.method == 'POST':
         try:
-            # ✅ Read payment data safely from POST
+            # ✅ Read payment + form data
             data = request.POST or json.loads(request.body.decode('utf-8'))
 
             razorpay_order_id = data.get('razorpay_order_id')
             razorpay_payment_id = data.get('razorpay_payment_id')
             razorpay_signature = data.get('razorpay_signature')
+
+            first_name = data.get('first_name') or request.user.first_name or ''
+            last_name = data.get('last_name') or request.user.last_name or ''
+            email = data.get('email') or request.user.email or ''
+            address = data.get('address') or getattr(request.user, 'address', '') or ''
+            zipcode = data.get('zipcode') or getattr(request.user, 'zipcode', '') or ''
+            city = data.get('city') or getattr(request.user, 'city', '') or ''
+
+            if not all([first_name, last_name, email, address, zipcode, city]):
+                return JsonResponse({'status': 'failure', 'message': 'Missing address details'})
 
             if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
                 return JsonResponse({'status': 'failure', 'message': 'Missing Razorpay payment details'})
@@ -463,25 +473,43 @@ def checkout_view(request):
             # ✅ Payment verified — Create Order in DB
             order = Order.objects.create(
                 user=request.user,
-                first_name=request.user.first_name,
-                last_name=request.user.last_name,
-                email=request.user.email,
-                address=getattr(request.user, 'address', ''),
-                city=getattr(request.user, 'city', ''),
-                zipcode=getattr(request.user, 'zipcode', ''),
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                address=address,
+                city=city,
+                zipcode=zipcode,
                 paid_amount=subtotal,
                 status='processing',
-                razorpay_order_id=razorpay_order_id
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_payment_status='paid'
             )
 
-            # ✅ Save each item
+            # ✅ Save each item and adjust stock
             for item in items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item.product,
-                    price=item.product.price,
-                    quantity=item.quantity
-                )
+                if item.combo_deal:
+                    OrderItem.objects.create(
+                        order=order,
+                        combo_deal=item.combo_deal,
+                        price=item.combo_deal.discounted_price,
+                        quantity=item.quantity
+                    )
+                    for prod in item.combo_deal.products.all():
+                        if prod.stock >= item.quantity:
+                            prod.stock -= item.quantity
+                            prod.save()
+                else:
+                    item_price = item.unit_price if item.unit_price is not None else item.product.get_display_price()
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        price=item_price,
+                        quantity=item.quantity
+                    )
+                    if item.product.stock >= item.quantity:
+                        item.product.stock -= item.quantity
+                        item.product.save()
 
             # ✅ Clear cart
             cart.items.all().delete()
@@ -490,7 +518,7 @@ def checkout_view(request):
             return JsonResponse({'status': 'success', 'redirect_url': '/order-success/'})
 
         except Exception as e:
-            print("Payment verification failed:", str(e))  # log error for debugging
+            print("Payment verification failed:", str(e))
             return JsonResponse({'status': 'failure', 'message': f'Payment verification failed: {str(e)}'})
 
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
