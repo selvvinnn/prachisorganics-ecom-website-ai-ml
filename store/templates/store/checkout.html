@@ -65,9 +65,6 @@
          return;
      }
 
-     const formData = new FormData(form);
-     const data = Object.fromEntries(formData.entries());
-
     var options = {
         "key": "rzp_live_RYXIOhLxjO9TQW", // your Razorpay key
         "amount": "{{ payment.amount }}",
@@ -76,10 +73,14 @@
         "description": "Order Payment",
         "order_id": "{{ payment.id }}",
         "prefill": {
-            "name": data.first_name + " " + data.last_name,
-            "email": data.email,
-         },
+            "name": form.first_name.value + " " + form.last_name.value,
+            "email": form.email.value,
+        },
          "handler": function (response) {
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+          
              data.razorpay_order_id = response.razorpay_order_id;
              data.razorpay_payment_id = response.razorpay_payment_id;
              data.razorpay_signature = response.razorpay_signature;
