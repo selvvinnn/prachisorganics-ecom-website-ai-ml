@@ -8,7 +8,7 @@
     <div class="bg-white rounded shadow p-4 flex justify-center items-center">
       <div class="aspect-[3/4] w-full bg-brandBeige rounded overflow-hidden flex justify-center items-center">
         {% if product.image %}
-          <img class="w-full h-auto object-contain" src="{{ product.image.url }}" alt="{{ product.name }}">
+          <img class="w-full h-auto object-contain" src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-64 flex items-center justify-center text-gray-400\'>No Image</div>';">
         {% else %}
           <div class="text-gray-500">No Image</div>
         {% endif %}

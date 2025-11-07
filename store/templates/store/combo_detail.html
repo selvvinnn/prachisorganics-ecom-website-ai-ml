@@ -8,7 +8,7 @@
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
       <div class="aspect-[4/3] bg-brandBeige relative">
         {% if combo.image %}
-          <img src="{{ combo.image.url }}" alt="{{ combo.name }}" class="absolute inset-0 w-full h-full object-cover"/>
+          <img src="{{ combo.image.url }}" alt="{{ combo.name }}" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-400\'>No Image</div>';"/>
         {% endif %}
       </div>
     </div>
