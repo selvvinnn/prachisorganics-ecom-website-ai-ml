@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Prachi's Organics{% endblock %}</title>
-    <link rel="icon" href="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/icons/prachisorganics_logo.png" type="image/x-icon">
+    <link rel="icon" href="/media/icons/prachisorganics_logo.png" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -105,7 +105,7 @@ referrerpolicy="no-referrer" />
   <div class="container mx-auto px-4 py-3 flex items-center justify-between">
     <!-- LOGO -->
     <a href="/" class="text-xl md:text-2xl font-serif font-semibold text-brandBrown flex items-center gap-2">
-      <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/icons/logo_po.png" alt="Prachi's Organics Logo" class="h-8 w-auto" onerror="this.style.display='none';" />
+      <img src="/media/icons/logo_po.png" alt="Prachi's Organics Logo" class="h-8 w-auto" />
       Prachi's Organics
     </a>
 
@@ -174,6 +174,45 @@ referrerpolicy="no-referrer" />
     <a class="hover:text-brandGreen" href="/contact/">Contact</a>
     <a class="hover:text-brandGreen" href="/track_order/">Track Order</a>
   </nav>
+
+  <!-- 🌿 Mobile Menu Drawer -->
+  <div id="mobileMenu"
+       class="fixed inset-0 bg-white z-[200] transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+    <div class="flex justify-between items-center p-4 border-b border-gray-200 sticky top-0 bg-white">
+      <span class="text-lg font-semibold text-brandBrown">Menu</span>
+      <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="flex flex-col p-6 text-brandBrown text-base space-y-5">
+      {% if request.user.is_authenticated %}
+        <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Account</a>
+        <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+      {% else %}
+        <a href="/login/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Login</a>
+        <a href="/signup/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
+      {% endif %}
+      <a href="/cart/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
+
+      <hr class="my-2 border-gray-300" />
+      <a href="/products/?category=skin-care" class="hover:text-brandGreen transition">Face Care</a>
+      <a href="/products/?category=hair-care" class="hover:text-brandGreen transition">Hair Care</a>
+      <a href="/products/?category=body-care" class="hover:text-brandGreen transition">Body Care</a>
+      <a href="/products/" class="hover:text-brandGreen transition">All Products</a>
+      <a href="/combos/" class="hover:text-brandGreen transition">Combos</a>
+      <a href="/track-order/" class="hover:text-brandGreen transition">Track Order</a>
+      <a href="/about/" class="hover:text-brandGreen transition">About</a>
+      <a href="/contact/" class="hover:text-brandGreen transition">Contact</a>
+      <a href="/terms/" class="hover:text-brandGreen transition">Terms & Conditions</a>
+      <a href="/privacy/" class="hover:text-brandGreen transition">Privacy Policy</a>
+      <a href="/returns/" class="hover:text-brandGreen transition">Return & Refund Policy</a>
+
+      <a href="/contact/" class="bg-brandGreen text-white py-2 rounded-lg text-center hover:bg-[#6f9213] transition">Contact Us</a>
+    </div>
+  </div>
+
+  <div id="menuBackdrop" class="fixed inset-0 bg-black/40 hidden z-[190]"></div>
 
 </header>
 
@@ -298,7 +337,31 @@ referrerpolicy="no-referrer" />
     </style>
 
 
-<script>
+ <script>
+  // Select elements
+  const menuToggle = document.getElementById("menu-toggle");
+  const menuClose = document.getElementById("menu-close");
+  const mobileMenu = document.getElementById("mobileMenu");
+const menuBackdrop = document.getElementById("menuBackdrop");
+
+  // Function to open menu
+  menuToggle?.addEventListener("click", () => {
+  mobileMenu.classList.remove("translate-x-full");
+  mobileMenu.classList.add("translate-x-0");
+  menuBackdrop.classList.remove("hidden");
+  document.body.classList.add("overflow-hidden");
+  });
+
+  // Function to close menu
+  const closeMenu = () => {
+  mobileMenu.classList.add("translate-x-full");
+  mobileMenu.classList.remove("translate-x-0");
+  menuBackdrop.classList.add("hidden");
+  document.body.classList.remove("overflow-hidden");
+  };
+
+  menuClose?.addEventListener("click", closeMenu);
+menuBackdrop?.addEventListener("click", closeMenu);
 </script>
 
 

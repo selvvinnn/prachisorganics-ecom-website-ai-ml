@@ -100,10 +100,10 @@
         <a href="/products/?category={{ category.slug }}" class="group bg-white rounded shadow overflow-hidden">
           <div class="relative h-80 bg-brandBeige overflow-hidden">
             {% if category.image %}
-              <img src="{{ category.image.url }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0" onerror="this.style.display='none';"/>
+              <img src="{{ category.image.url }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
             {% endif %}
             {% if category.hover_image %}
-              <img src="{{ category.hover_image.url }}" alt="{{ category.name }} hover" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100" onerror="this.style.display='none';"/>
+              <img src="{{ category.hover_image.url }}" alt="{{ category.name }} hover" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
             {% endif %}
             {% if not category.image and not category.hover_image %}
               <div class="h-full w-full flex items-center justify-center text-gray-500">{{ category.name }}</div>
@@ -127,7 +127,7 @@
         <a href="/products/{{ product.slug }}/" class="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden">
           <div class="aspect-[4/4] bg-brandBeige relative overflow-hidden">
             {% if product.image %}
-              <img loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-400\'>No Image</div>';"/>
+              <img loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ product.image.url }}" alt="{{ product.name }}"/>
             {% else %}
               <div class="absolute inset-0 flex items-center justify-center text-gray-500">No Image</div>
             {% endif %}
@@ -164,7 +164,7 @@
         <a href="{% url 'store:combo_detail' combo.slug %}" class="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden">
           <div class="aspect-[4/3] bg-brandBeige relative overflow-hidden">
             {% if combo.image %}
-              <img src="{{ combo.image.url }}" alt="{{ combo.name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'absolute inset-0 flex items-center justify-center text-gray-400\'>No Image</div>';"/>
+              <img src="{{ combo.image.url }}" alt="{{ combo.name }}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
             {% else %}
               <div class="absolute inset-0 flex items-center justify-center text-gray-500">No Image</div>
             {% endif %}
@@ -189,7 +189,7 @@
     <div class="grid md:grid-cols-4 gap-6">
       <div class="bg-white rounded shadow overflow-hidden">
         <div class="relative aspect-[3/4] bg-brandBeige">
-          <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/routine/cleanse.jpg" alt="Cleanse" class="absolute inset-0 w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400\'>Image</div>';">
+          <img src="/media/routine/cleanse.jpg" alt="Cleanse" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
         </div>
         <div class="p-4">
           <div class="text-lg font-serif font-semibold">1. Cleanse</div>
@@ -198,7 +198,7 @@
       </div>
       <div class="bg-white rounded shadow overflow-hidden">
         <div class="relative aspect-[3/4] bg-brandBeige">
-          <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/routine/tone.jpg" alt="Tone" class="absolute inset-0 w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400\'>Image</div>';">
+          <img src="/media/routine/tone.jpg" alt="Tone" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
         </div>
         <div class="p-4">
           <div class="text-lg font-serif font-semibold">2. Tone</div>
@@ -207,7 +207,7 @@
       </div>
       <div class="bg-white rounded shadow overflow-hidden">
         <div class="relative aspect-[3/4] bg-brandBeige">
-          <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/routine/treat.jpg" alt="Treat" class="absolute inset-0 w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400\'>Image</div>';">
+          <img src="/media/routine/treat.jpg" alt="Treat" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
         </div>
         <div class="p-4">
           <div class="text-lg font-serif font-semibold">3. Treat</div>
@@ -216,7 +216,7 @@
       </div>
       <div class="bg-white rounded shadow overflow-hidden">
         <div class="relative aspect-[3/4] bg-brandBeige">
-          <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/routine/moisturize.jpg" alt="Moisturize" class="absolute inset-0 w-full h-full object-cover" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-gray-400\'>Image</div>';">
+          <img src="/media/routine/moisturize.jpg" alt="Moisturize" class="absolute inset-0 w-full h-full object-cover" loading="lazy">
         </div>
         <div class="p-4">
           <div class="text-lg font-serif font-semibold">4. Moisturize</div>
@@ -233,7 +233,7 @@
 
     <div class="p-4 ">
       <div class="mb-4">
-        <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/icons/organic.png" alt="100% Organic" class="mx-auto w-40 h-40" onerror="this.style.display='none';">
+        <img src="/media/icons/organic.png" alt="100% Organic" class="mx-auto w-40 h-40">
       </div>
       100% Organic
       <p style="font-size: 12px;">Made from Natual Ingredients</p>
@@ -241,7 +241,7 @@
 
     <div class="p-4 ">
       <div class="mb-4">
-        <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/icons/creulty.png" alt="Cruelty-Free" class="mx-auto w-40 h-40" onerror="this.style.display='none';">
+        <img src="/media/icons/creulty.png" alt="Cruelty-Free" class="mx-auto w-40 h-40">
       </div>
       Cruelty-Free
       <p style="font-size: 12px;">Made from Natual Ingredients</p>
@@ -249,7 +249,7 @@
 
     <div class=" p-4">
       <div class="mb-4">
-        <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/icons/handmade.png" alt="Handmade" class="mx-auto w-40 h-40" onerror="this.style.display='none';">
+        <img src="/media/icons/handmade.png" alt="Handmade" class="mx-auto w-40 h-40">
       </div>
       Handmade
       <p style="font-size: 12px;">Made from Natual Ingredients</p>
@@ -257,7 +257,7 @@
 
     <div class=" p-4">
       <div class="mb-4">
-        <img src="https://res.cloudinary.com/dm4pmi9ae/image/upload/v1/media/icons/economy_magic-removebg-preview.png" alt="Eco Packaging" class="mx-auto w-40 h-40" onerror="this.style.display='none';">
+        <img src="media\icons\economy_magic-removebg-preview.png" alt="Eco Packaging" class="mx-auto w-40 h-40">
       </div>
       Eco Packaging
       <p style="font-size: 12px;">Made from Natual Ingredients</p>
