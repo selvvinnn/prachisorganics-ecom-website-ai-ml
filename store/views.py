@@ -449,12 +449,12 @@ def checkout_view(request):
             razorpay_payment_id = data.get('razorpay_payment_id')
             razorpay_signature = data.get('razorpay_signature')
 
-            first_name = data.get('first_name') or request.user.first_name or ''
-            last_name = data.get('last_name') or request.user.last_name or ''
-            email = data.get('email') or request.user.email or ''
-            address = data.get('address') or getattr(request.user, 'address', '') or ''
-            zipcode = data.get('zipcode') or getattr(request.user, 'zipcode', '') or ''
-            city = data.get('city') or getattr(request.user, 'city', '') or ''
+            first_name = data.get('first_name')
+            last_name = data.get('last_name')
+            email = data.get('email')
+            address = data.get('address')
+            zipcode = data.get('zipcode')
+            city = data.get('city')
 
             if not all([first_name, last_name, email, address, zipcode, city]):
                 return JsonResponse({'status': 'failure', 'message': 'Missing address details'})
