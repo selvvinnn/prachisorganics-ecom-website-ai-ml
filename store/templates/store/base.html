@@ -176,14 +176,7 @@ referrerpolicy="no-referrer" />
   </nav>
 
   <!-- 🌿 Mobile Menu Drawer -->
-  <div id="mobileMenu"
-       class="fixed inset-0 bg-white z-[200] transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
-    <div class="flex justify-between items-center p-4 border-b border-gray-200 sticky top-0 bg-white">
-      <span class="text-lg font-semibold text-brandBrown">Menu</span>
-      <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
+  
 
     <div class="flex flex-col p-6 text-brandBrown text-base space-y-5">
       {% if request.user.is_authenticated %}
