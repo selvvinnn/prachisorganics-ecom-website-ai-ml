@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-_)#k=+yh6ru+3^3pr!%!c#3im4--#c9ig4-q=f-j#(#(dzi$*p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://prachisorganics.com','prachisorganics.com', 'www.prachisorganics.com','prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
+ALLOWED_HOSTS = ['https://prachisorganics.com','prachisorganics.com', 'www.prachisorganics.com','prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'localhost']
 CSRF_TRUSTED_ORIGINS = ['https://prachisorganics.com','https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
 
 
@@ -142,8 +142,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = None 
+
 
 # Custom user model
 AUTH_USER_MODEL = 'store.CustomUser'
@@ -175,9 +176,11 @@ DATABASES = {
         'NAME': 'railway',
         'USER': 'postgres',
         'PASSWORD': os.environ['DB_PASSWORD'],
+        # 'PASSWORD': 'postgres',
         'HOST': 'tramway.proxy.rlwy.net',
+        # 'HOST': 'localhost',
         'PORT': '53906',
-    
+        # 'PORT': '5432',
     }
         
 }
