@@ -31,6 +31,8 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
+import cloudinary
+from cloudinary.models import CloudinaryField
 
 class Product(models.Model):
     CONCERN_CHOICES = [
@@ -47,6 +49,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     sale_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     image = models.ImageField(upload_to='products/', blank=True, null=True)
+    image = CloudinaryField('image', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
     stock = models.PositiveIntegerField(default=0)
     is_available = models.BooleanField(default=True)
