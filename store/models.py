@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 import datetime 
+import cloudinary
+from cloudinary.models import CloudinaryField
 
 
 class CustomUser(AbstractUser):
@@ -18,7 +20,9 @@ class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True)
     image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    image = CloudinaryField('image', blank=True, null=True)
     hover_image = models.ImageField(upload_to='categories/', blank=True, null=True)
+    hover_image = CloudinaryField('image', blank=True, null=True)
 
     class Meta:
         verbose_name_plural = 'Categories'
@@ -31,8 +35,7 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
-import cloudinary
-from cloudinary.models import CloudinaryField
+
 
 class Product(models.Model):
     CONCERN_CHOICES = [
@@ -81,6 +84,7 @@ class ComboDeal(models.Model):
     discounted_price = models.DecimalField(max_digits=10, decimal_places=2)
     products = models.ManyToManyField(Product, related_name='combo_deals', blank=True)
     image = models.ImageField(upload_to='combos/', blank=True, null=True)
+    image = CloudinaryField('image', blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
