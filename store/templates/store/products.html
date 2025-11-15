@@ -25,9 +25,9 @@
   <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
     {% for product in products %}
       <a href="/products/{{ product.slug }}/" class="bg-white rounded shadow hover:shadow-md transition overflow-hidden">
-        <div class="h-44 bg-brandBeige flex items-center justify-center">
+        <div class="aspect-[3/4] bg-brandBeige flex items-center justify-center">
           {% if product.image %}
-            <img class="h-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'h-full flex items-center justify-center text-gray-400\'>No Image</div>';"/>
+            <img class="h-full w-full object-cover" src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'h-full flex items-center justify-center text-gray-400\'>No Image</div>';"/>
           {% else %}
             <div class="text-gray-500">No Image</div>
           {% endif %}
