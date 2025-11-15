@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from .models import (
     Category, Product, ComboDeal, Review, 
-    Cart, CartItem, Order, OrderItem, ContactMessage, SiteSettings, Offer, ShippingAddress, CustomUser
+    Cart, CartItem, Order, OrderItem, ContactMessage, SiteSettings, Offer, ShippingAddress, CustomUser, Coupon
 )
 
 @admin.register(CustomUser)
@@ -49,6 +49,7 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('razorpay_order_id', 'razorpay_payment_id', 'user__username', 'email')
     readonly_fields = ('razorpay_order_id', 'razorpay_payment_id', 'razorpay_payment_status', 'created_at')
 
+
 @admin.register(OrderItem)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ['order', 'product', 'quantity', 'price']
@@ -60,6 +61,13 @@ class CartAdmin(admin.ModelAdmin):
 @admin.register(CartItem)
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ['cart', 'product', 'quantity']
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['code', 'discount_percentage', 'active', 'valid_from', 'valid_to']
+    list_filter = ['active']
+    search_fields = ['code']
+
 
 
 @admin.register(SiteSettings)

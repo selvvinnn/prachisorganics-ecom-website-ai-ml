@@ -73,6 +73,15 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.name
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=50, unique=True)
+    discount_percentage = models.PositiveIntegerField(help_text="Enter discount percentage (e.g., 10 for 10%)")
+    active = models.BooleanField(default=True)
+    valid_from = models.DateTimeField(default=datetime.datetime.now)
+    valid_to = models.DateTimeField(null = True, blank = True)
+
+    def __str__(self):
+        return f"{self.code} - {self.discount_percentage}%"
 
 
 
@@ -174,6 +183,9 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     shipped = models.BooleanField(default=False)
     date_shipped = models.DateTimeField(blank=True, null=True)
+    coupon = models.CharField(max_length=50, blank=True, null=True)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
 
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)

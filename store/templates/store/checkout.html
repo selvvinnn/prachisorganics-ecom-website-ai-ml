@@ -39,19 +39,51 @@
       </form>
     </div>
     <div class="bg-white p-6 rounded shadow">
-      <div class="font-semibold mb-2">Order Summary</div>
-      {% for item in items %}
-        <div class="py-2 flex items-center justify-between">
-          <div class="text-sm">{{ item.product.name }} x {{ item.quantity }}</div>
-          <div class="text-sm font-semibold">{{ item.line_total|inr }}</div>
-        </div>
-      {% endfor %}
-      <div class="mt-4 flex justify-between">
-        <div>Subtotal</div>
-        <div class="font-semibold">{{ subtotal|inr }}</div>
-      </div>
+  <div class="font-semibold mb-2">Order Summary</div>
+
+  {% for item in items %}
+    <div class="py-2 flex items-center justify-between">
+      <div class="text-sm">{{ item.product.name }} x {{ item.quantity }}</div>
+      <div class="text-sm font-semibold">{{ item.line_total|inr }}</div>
     </div>
+  {% endfor %}
+
+  <!-- 🟢 COUPON INPUT -->
+  <form method="GET" class="mt-4 flex gap-2">
+    <input 
+      type="text" 
+      name="coupon" 
+      placeholder="Enter coupon code" 
+      class="border px-3 py-2 rounded w-full"
+      value="{{ applied_coupon|default:'' }}">
+    <button class="bg-brandGreen text-white px-4 py-2 rounded">Apply</button>
+  </form>
+
+  <!-- 🟢 Show applied coupon -->
+  {% if applied_coupon %}
+    <div class="mt-2 text-green-600 text-sm">
+      Coupon <strong>{{ applied_coupon }}</strong> applied
+    </div>
+  {% endif %}
+
+  <div class="mt-4 flex justify-between">
+    <div>Subtotal</div>
+    <div class="font-semibold">{{ subtotal|inr }}</div>
   </div>
+
+  {% if discount_amount > 0 %}
+    <div class="mt-2 flex justify-between text-green-600">
+      <div>Discount</div>
+      <div>- {{ discount_amount|inr }}</div>
+    </div>
+
+    <div class="mt-2 flex justify-between font-bold text-lg">
+      <div>Final Total</div>
+      <div>{{ final_amount|inr }}</div>
+    </div>
+  {% endif %}
+</div>
+
 
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 

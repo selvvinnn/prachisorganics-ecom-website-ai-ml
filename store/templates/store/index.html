@@ -125,7 +125,7 @@
      <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6 lg:gap-9 align-center">
       {% for product in featured_products %}
         <a href="/products/{{ product.slug }}/" class="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition overflow-hidden">
-          <div class="aspect-[4/4] bg-brandBeige relative overflow-hidden">
+          <div class="aspect-[3/4] bg-brandBeige relative overflow-hidden">
             {% if product.image %}
               <img loading="lazy" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="{{ product.image.url }}" alt="{{ product.name }}"/>
             {% else %}

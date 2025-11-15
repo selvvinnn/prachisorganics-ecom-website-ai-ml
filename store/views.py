@@ -9,6 +9,8 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.utils import timezone
+
 
 from .models import (
     Category,
@@ -21,6 +23,7 @@ from .models import (
     OrderItem,
     ContactMessage,
     CustomUser,
+    Coupon,
 )
 
 
@@ -402,6 +405,7 @@ def profile(request):
 
 from django.conf import settings
 import razorpay
+"""
 @login_required
 def checkout_view(request):
     cart, _ = Cart.objects.get_or_create(user=request.user)
@@ -525,6 +529,210 @@ def checkout_view(request):
             return JsonResponse({'status': 'failure', 'message': f'Payment verification failed: {str(e)}'})
 
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
+
+"""
+
+from django.db.models import Q
+from django.utils import timezone
+from decimal import Decimal
+
+@login_required
+def checkout_view(request):
+    cart, _ = Cart.objects.get_or_create(user=request.user)
+    items = cart.items.select_related('product', 'combo_deal').all()
+    
+    if not items:
+        messages.error(request, 'Your cart is empty.')
+        return redirect('store:products')
+
+    subtotal = sum([item.line_total() for item in items])
+
+    # -------------------------------
+    # COUPON LOGIC
+    # -------------------------------
+    applied_coupon = None
+    discount_amount = 0
+    final_amount = subtotal
+
+    # Load applied coupon from session (if exists)
+    if request.session.get('coupon_code'):
+        try:
+            applied_coupon = Coupon.objects.get(
+                Q(code__iexact=request.session['coupon_code']),
+                Q(active=True),
+                Q(valid_from__lte=timezone.now()),
+                Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
+            )
+            discount_amount = subtotal * (applied_coupon.discount_percentage / Decimal(100))
+            final_amount = subtotal - discount_amount
+        except Coupon.DoesNotExist:
+            request.session.pop('coupon_code', None)
+
+    # User applies coupon via GET request
+    if request.method == "GET" and request.GET.get("coupon"):
+        code = request.GET.get("coupon").strip()
+        try:
+            coupon = Coupon.objects.get(
+                Q(code__iexact=code),
+                Q(active=True),
+                Q(valid_from__lte=timezone.now()),
+                Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
+            )
+            request.session['coupon_code'] = coupon.code
+            return redirect('store:checkout')  # reload page
+        except Coupon.DoesNotExist:
+            messages.error(request, "Invalid or expired coupon code.")
+            return redirect('store:checkout')
+
+    # -------------------------------
+    # CREATE RAZORPAY ORDER (GET)
+    # -------------------------------
+    if request.method == 'GET':
+        client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
+
+        amount_in_paise = int(final_amount * 100)
+
+        # Razorpay minimum amount check
+        if amount_in_paise < 100:
+            # less than ₹1
+            amount_in_paise = 100  # force minimum ₹1
+
+        payment = client.order.create({
+    'amount': amount_in_paise,
+    'currency': 'INR',
+    'payment_capture': 1
+    })
+        cart.razorpay_order_id = payment['id']
+        cart.save()
+
+        context = {
+            'cart': cart,
+            'payment': payment,
+            'items': items,
+            'subtotal': subtotal,
+            'discount_amount': discount_amount,
+            'final_amount': final_amount,
+            'applied_coupon': applied_coupon.code if applied_coupon else None,
+            'checkout_data': {
+                'first_name': request.user.first_name,
+                'last_name': request.user.last_name,
+                'email': request.user.email,
+                'address': getattr(request.user, 'address', ''),
+                'city': getattr(request.user, 'city', ''),
+                'zipcode': getattr(request.user, 'zipcode', ''),
+            }
+        }
+        return render(request, 'store/checkout.html', context)
+
+    # -------------------------------
+    # PAYMENT VERIFICATION (POST)
+    # -------------------------------
+    elif request.method == 'POST':
+        try:
+            body = request.body.decode('utf-8').strip()
+            data = json.loads(body) if body else {}
+
+            razorpay_order_id = data.get('razorpay_order_id')
+            razorpay_payment_id = data.get('razorpay_payment_id')
+            razorpay_signature = data.get('razorpay_signature')
+
+            first_name = (data.get('first_name') or '').strip()
+            last_name = (data.get('last_name') or '').strip()
+            email = (data.get('email') or '').strip()
+            address = (data.get('address') or '').strip()
+            zipcode = (data.get('zipcode') or '').strip()
+            city = (data.get('city') or '').strip()
+
+            if not all([first_name, last_name, email, address, zipcode, city]):
+                return JsonResponse({'status': 'failure', 'message': 'Missing address details'})
+
+            if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
+                return JsonResponse({'status': 'failure', 'message': 'Missing Razorpay payment details'})
+
+            # Verify Razorpay signature
+            client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
+            client.utility.verify_payment_signature({
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_payment_id': razorpay_payment_id,
+                'razorpay_signature': razorpay_signature
+            })
+
+            # Recalculate final amount with coupon to double-secure
+            coupon_code = request.session.get('coupon_code')
+            applied_coupon = None
+            discount_amount = 0
+            final_amount = subtotal
+
+            if coupon_code:
+                try:
+                    applied_coupon = Coupon.objects.get(
+                        Q(code__iexact=coupon_code),
+                        Q(active=True),
+                        Q(valid_from__lte=timezone.now()),
+                        Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
+                    )
+                    discount_amount = subtotal * (applied_coupon.discount_percent / Decimal(100))
+                    final_amount = subtotal - discount_amount
+                except Coupon.DoesNotExist:
+                    pass
+
+            # Create order
+            order = Order.objects.create(
+                user=request.user,
+                first_name=first_name,
+                last_name=last_name,
+                email=email,
+                address=address,
+                city=city,
+                zipcode=zipcode,
+                paid_amount=final_amount,
+                discount_amount=discount_amount,
+                coupon_code=applied_coupon.code if applied_coupon else None,
+                status='processing',
+                razorpay_order_id=razorpay_order_id,
+                razorpay_payment_id=razorpay_payment_id,
+                razorpay_payment_status='paid'
+            )
+
+            # Save items + update stock
+            for item in items:
+                if item.combo_deal:
+                    OrderItem.objects.create(
+                        order=order,
+                        combo_deal=item.combo_deal,
+                        price=item.combo_deal.discounted_price,
+                        quantity=item.quantity
+                    )
+                    for prod in item.combo_deal.products.all():
+                        if prod.stock >= item.quantity:
+                            prod.stock -= item.quantity
+                            prod.save()
+                else:
+                    item_price = item.unit_price if item.unit_price else item.product.get_display_price()
+                    OrderItem.objects.create(
+                        order=order,
+                        product=item.product,
+                        price=item_price,
+                        quantity=item.quantity
+                    )
+                    if item.product.stock >= item.quantity:
+                        item.product.stock -= item.quantity
+                        item.product.save()
+
+            # Clear cart and coupon
+            cart.items.all().delete()
+            request.session.pop('coupon_code', None)
+
+            messages.success(request, "Payment successful! Order placed.")
+            return JsonResponse({'status': 'success', 'redirect_url': '/order-success/'})
+
+        except Exception as e:
+            print("Payment verification failed:", str(e))
+            return JsonResponse({'status': 'failure', 'message': f'Payment verification failed: {str(e)}'})
+
+    return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
+
+
 
 
 @login_required
