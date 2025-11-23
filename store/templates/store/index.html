@@ -78,6 +78,7 @@
     </script>
   </section>
 
+<!--
   <section class="container mx-auto px-4 mt-6">
   <div class="bg-white rounded-2xl border p-5 text-lg flex items-center gap-5 overflow-x-auto whitespace-nowrap shadow-sm">
     <span class=" font-serif text-gray-500 font-medium">Trending:</span>
@@ -92,33 +93,7 @@
     </a>
   </div> 
 </section>
-
-  <section class="container mx-auto px-4 md:px-12 lg:px-24 py-12 text-center">
-    <h2 class="font-serif text-3xl mb-8 bg-center">Shop by Category</h2>
-    <div class="grid md:grid-cols-3 gap-10 sm:grid-cols-3 align-center">
-      {% for category in categories %}
-        <a href="/products/?category={{ category.slug }}" class="group bg-white rounded shadow overflow-hidden">
-          <div class="relative h-80 bg-brandBeige overflow-hidden">
-            {% if category.image %}
-              <img src="{{ category.image.url }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
-            {% endif %}
-            {% if category.hover_image %}
-              <img src="{{ category.hover_image.url }}" alt="{{ category.name }} hover" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
-            {% endif %}
-            {% if not category.image and not category.hover_image %}
-              <div class="h-full w-full flex items-center justify-center text-gray-500">{{ category.name }}</div>
-            {% endif %}
-          </div>
-          <div class="p-4 flex items-center justify-between">
-            <div class="font-semibold">{{ category.name }}</div>
-            <div class="text-brandGreen">→</div>
-          </div>
-        </a>
-      {% empty %}
-        <div class="text-gray-500">No categories yet.</div>
-      {% endfor %}
-    </div>
-  </section>
+-->
 
    <section class="container mx-auto px-4 py-12 text-center">
     <h2 class="font-serif text-3xl mb-8 bg-center">Featured Products</h2>
@@ -156,6 +131,34 @@
       <a href="/products/" class="inline-block px-5 py-2 border border-brandGreen text-brandGreen rounded-full hover:bg-brandGreen hover:text-white transition">View More</a>
     </div>
   </section>
+
+  <section class="container mx-auto px-4 md:px-12 lg:px-24 py-12 text-center">
+    <h2 class="font-serif text-3xl mb-8 bg-center">Shop by Category</h2>
+    <div class="grid md:grid-cols-3 gap-10 sm:grid-cols-3 align-center">
+      {% for category in categories %}
+        <a href="/products/?category={{ category.slug }}" class="group bg-white rounded shadow overflow-hidden">
+          <div class="relative h-80 bg-brandBeige overflow-hidden">
+            {% if category.image %}
+              <img src="{{ category.image.url }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
+            {% endif %}
+            {% if category.hover_image %}
+              <img src="{{ category.hover_image.url }}" alt="{{ category.name }} hover" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
+            {% endif %}
+            {% if not category.image and not category.hover_image %}
+              <div class="h-full w-full flex items-center justify-center text-gray-500">{{ category.name }}</div>
+            {% endif %}
+          </div>
+          <div class="p-4 flex items-center justify-between">
+            <div class="font-semibold">{{ category.name }}</div>
+            <div class="text-brandGreen">→</div>
+          </div>
+        </a>
+      {% empty %}
+        <div class="text-gray-500">No categories yet.</div>
+      {% endfor %}
+    </div>
+  </section>
+
 
   <section class="container mx-auto px-4 py-12 text-center">
     <h2 class="font-serif text-3xl mb-8 bg-center">Combo Deals</h2>
