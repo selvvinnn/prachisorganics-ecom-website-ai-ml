@@ -1,41 +1,121 @@
 {% extends "store/base.html" %}
 
 {% block content %}
-<div class="container mx-auto p-6">
-  <h1 class="text-3xl font-bold mb-6">My Profile</h1>
+<div class="container mx-auto px-4 py-10">
 
-  <!-- Basic Info -->
-  <div class="mb-8">
-    <p><strong>Username:</strong> {{ user.username }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
+  <!-- Profile Header -->
+  <h1 class="text-3xl md:text-4xl font-serif font-bold text-brandBrown mb-8">
+    My Profile
+  </h1>
+
+  <!-- USER INFO CARD -->
+  <div class="bg-white p-6 rounded-xl shadow-sm border mb-10">
+    <h2 class="text-xl font-semibold mb-4 text-brandBrown">Account Information</h2>
+
+    <div class="space-y-2 text-brandBrown">
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
   </div>
 
-  <!-- Orders Section -->
-  <div class="mb-8">
-    <h2 class="text-2xl font-semibold mb-4">My Orders</h2>
-    {% if orders %}
-      <ul class="space-y-4">
-        {% for order in orders %}
-          <li class="border p-4 rounded shadow-sm">
-            <p><strong>Order #{{ order.id }}</strong> - {{ order.created_at|date:"M d, Y" }}</p>
-            <p>Status: {{ order.status }}</p>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-gray-500">No orders yet.</p>
-    {% endif %}
-  </div>
+<!-- ORDERS SECTION -->
+<div class="mb-12">
+  <h2 class="text-2xl font-serif font-semibold mb-5 text-brandBrown">My Orders</h2>
 
-  <!-- Combos Section -->
-  <div class="mb-8">
-    <h2 class="text-2xl font-semibold mb-4">My Combos</h2>
+  {% if orders %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      {% for order in orders %}
+        <div class="bg-white rounded-xl border shadow-sm p-5 hover:shadow-md transition">
+
+          <!-- Order Header -->
+          <div class="flex justify-between items-center mb-3">
+            <p class="font-semibold text-brandBrown">
+              Order #{{ order.id }}
+            </p>
+            <span class="text-sm text-gray-500">
+              {{ order.created_at|date:"M d, Y" }}
+            </span>
+          </div>
+
+          <!-- Order Status Badge -->
+          <span class="text-xs px-3 py-1 rounded-full 
+            {% if order.status == 'delivered' %}
+              bg-green-100 text-green-700
+            {% elif order.status == 'shipped' %}
+              bg-blue-100 text-blue-700
+            {% elif order.status == 'processing' %}
+              bg-yellow-100 text-yellow-700
+            {% else %}
+              bg-gray-200 text-gray-600
+            {% endif %}">
+            {{ order.status|title }}
+          </span>
+
+          <!-- PRODUCT IMAGES INSIDE ORDER -->
+          <div class="mt-4 flex -space-x-3">
+            {% for item in order.items.all %}
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}"
+                     class="w-12 h-12 rounded-md border object-cover"
+                     title="{{ item.product.name }}">
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="mt-5 flex flex-col gap-3">
+
+            <!-- REORDER BUTTON -->
+            <form method="POST" action="/reorder/{{ order.id }}/">
+              {% csrf_token %}
+              <button type="submit"
+                class="w-full text-sm px-4 py-2 rounded-full bg-brandGreen text-white hover:bg-green-700 transition">
+                Reorder Items
+              </button>
+            </form>
+
+            <!-- CANCEL ORDER BUTTON (only if processing/pending) -->
+            {% if order.status in "pending processing" %}
+              <form method="POST" action="/cancel-order/{{ order.id }}/">
+                {% csrf_token %}
+                <button type="submit"
+                  class="w-full text-sm px-4 py-2 rounded-full border border-red-500 text-red-600 hover:bg-red-50 transition">
+                  Cancel Order
+                </button>
+              </form>
+            {% endif %}
+
+            <!-- VIEW ORDER DETAILS -->
+            <a href="/orders/{{ order.id }}/"
+               class="text-brandBrown text-sm font-medium hover:text-brandGreen transition text-center">
+              View Order Details →
+            </a>
+          </div>
+
+        </div>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+    <p class="text-gray-500">You have no orders yet.</p>
+  {% endif %}
+</div>
+
+
+  <!-- COMBOS SECTION -->
+  <div class="mb-12">
+    <h2 class="text-2xl font-serif font-semibold mb-5 text-brandBrown">My Combos</h2>
+
     {% if combos %}
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {% for combo in combos %}
-          <div class="border rounded p-4 shadow-sm">
-            <p class="font-semibold">{{ combo.name }}</p>
-            <p class="text-sm text-gray-500">${{ combo.discounted_price }}</p>
+          <div class="bg-white rounded-xl border shadow-sm p-5 hover:shadow-md transition">
+            <p class="text-lg font-semibold text-brandBrown mb-1">{{ combo.name }}</p>
+            <p class="text-brandGreen font-medium text-sm">
+              {{ combo.discounted_price }}
+            </p>
           </div>
         {% endfor %}
       </div>
@@ -44,9 +124,13 @@
     {% endif %}
   </div>
 
-  <!-- Cart Link -->
-  <div>
-    <a href="/cart/" class="px-4 py-2 bg-brandGreen text-white rounded shadow">Go to Cart</a>
+  <!-- CTA BUTTON -->
+  <div class="text-center">
+    <a href="/products/"
+       class="px-6 py-2 bg-brandGreen text-white rounded-full shadow hover:bg-green-700 transition">
+       Continue Shopping
+    </a>
   </div>
+
 </div>
 {% endblock %}

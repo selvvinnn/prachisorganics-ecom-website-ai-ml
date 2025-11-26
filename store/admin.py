@@ -1,8 +1,9 @@
 from django.contrib import admin
 from django.db import models
+from django.utils.html import format_html
 from .models import (
     Category, Product, ComboDeal, Review, 
-    Cart, CartItem, Order, OrderItem, ContactMessage, SiteSettings, Offer, ShippingAddress, CustomUser, Coupon
+    Cart, CartItem, Order, OrderItem, ContactMessage, SiteSettings, Offer, ShippingAddress, CustomUser, Coupon, CancellationRequest
 )
 
 @admin.register(CustomUser)
@@ -83,3 +84,22 @@ class OfferAdmin(admin.ModelAdmin):
 class ShippingAddressAdmin(admin.ModelAdmin):
     list_display = ['full_name', 'email', 'address_line1', 'city', 'state', 'zipcode', 'country', 'phone_number']
     list_filter = ['city', 'state', 'country']
+
+@admin.register(CancellationRequest)
+class CancellationRequestAdmin(admin.ModelAdmin):
+    list_display = ("order", "order_status", "created_at", "action_buttons")
+    list_filter = ("order__status",)
+    readonly_fields = ("order", "reason", "photo", "created_at")
+
+    def order_status(self, obj):
+        return obj.order.status
+
+    def action_buttons(self, obj):
+        return format_html(
+            f"""
+            <a class='button' href='/admin/cancel/{obj.id}/approve/'>Approve</a>
+            &nbsp;
+            <a class='button' href='/admin/cancel/{obj.id}/reject/'>Reject</a>
+            """
+        )
+    

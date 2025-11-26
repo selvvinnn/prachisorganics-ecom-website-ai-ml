@@ -43,9 +43,28 @@
 
   {% for item in items %}
     <div class="py-2 flex items-center justify-between">
-      <div class="text-sm">{{ item.product.name }} x {{ item.quantity }}</div>
-      <div class="text-sm font-semibold">{{ item.line_total|inr }}</div>
+
+  <div class="flex items-center gap-3">
+    <!-- Product Image -->
+    <img 
+      src="{{ item.product.image.url }}" 
+      alt="{{ item.product.name }}"
+      class="w-12 h-12 object-cover rounded border"
+    />
+
+    <!-- Product Name + Qty -->
+    <div class="text-sm">
+      {{ item.product.name }} x {{ item.quantity }}
     </div>
+  </div>
+
+  <!-- Price -->
+  <div class="text-sm font-semibold">
+    {{ item.line_total|inr }}
+  </div>
+
+</div>
+
   {% endfor %}
 
   <!-- 🟢 COUPON INPUT -->

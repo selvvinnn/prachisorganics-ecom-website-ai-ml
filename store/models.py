@@ -6,6 +6,9 @@ from django.dispatch import receiver
 import datetime 
 import cloudinary
 from cloudinary.models import CloudinaryField
+from django.db.models import Avg, Count
+
+
 
 
 class CustomUser(AbstractUser):
@@ -14,6 +17,8 @@ class CustomUser(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
+    
+
 
 
 class Category(models.Model):
@@ -69,6 +74,15 @@ class Product(models.Model):
 
     def get_display_price(self):
         return self.sale_price if self.sale_price is not None else self.price
+    
+    @property
+    def average_rating(self):
+        result = self.reviews.filter(is_approved=True).aggregate(avg=Avg('rating'))['avg']
+        return round(result or 0)
+
+    @property
+    def total_reviews(self):
+        return self.reviews.filter(is_approved=True).count()
 
     def __str__(self) -> str:
         return self.name
@@ -285,3 +299,15 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return f'Shipping Address - {str(self.id)}'
+
+
+class CancellationRequest(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="cancellation_requests")
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    reason = models.TextField()
+    photo = models.ImageField(upload_to="cancellations/", null=True, blank=True)
+    status = models.CharField(max_length=20, default="Pending")  # Pending, Approved, Rejected
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Cancellation for Order #{self.order.id}"

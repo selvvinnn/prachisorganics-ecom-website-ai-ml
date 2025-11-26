@@ -9,24 +9,47 @@
     
       <div class="divide-y">
         {% for item in items %}
-          <div class="py-4 flex items-center justify-between">
-            <div>
-              <div class="font-semibold">{{ item.product.name }}</div>
-              <div class="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                <form method="post" action="{% url 'store:update_cart' item.id %}" class="flex items-center">
-                  {% csrf_token %}
-                  <button type="submit" name="action" value="decrease" class="px-2 border rounded">-</button>
-                  <span class="px-3">{{ item.quantity }}</span>
-                  <button type="submit" name="action" value="increase" class="px-2 border rounded">+</button>
-                </form>
-                <form method="post" action="{% url 'store:remove_from_cart' item.id %}">
-                  {% csrf_token %}
-                  <button type="submit" class="ml-3 text-red-500 text-xs">Remove</button>
-                </form>
-              </div>
-            </div>
-            <div class="font-semibold">{{ item.line_total|inr }}</div>
-          </div>
+        <div class="py-4 flex items-center justify-between">
+
+  <!-- image + name + qty controls -->
+  <div class="flex items-center gap-4">
+    <!-- product image -->
+    <img
+      src="{{ item.product.image.url }}"
+      alt="{{ item.product.name }}"
+      class="w-20 h-20 object-cover rounded border"
+    />
+
+    <!-- name + qty controls -->
+    <div>
+      <div class="font-semibold">{{ item.product.name }}</div>
+
+      <div class="flex items-center gap-2 text-sm text-gray-600 mt-1">
+        <form method="post"
+              action="{% url 'store:update_cart' item.id %}"
+              class="flex items-center">
+          {% csrf_token %}
+          <button type="submit" name="action" value="decrease"
+                  class="px-2 border rounded">-</button>
+          <span class="px-3">{{ item.quantity }}</span>
+          <button type="submit" name="action" value="increase"
+                  class="px-2 border rounded">+</button>
+        </form>
+
+        <form method="post"
+              action="{% url 'store:remove_from_cart' item.id %}">
+          {% csrf_token %}
+          <button type="submit" class="ml-3 text-red-500 text-xs">Remove</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- line total -->
+  <div class="font-semibold">{{ item.line_total|inr }}</div>
+</div>
+
+
         {% endfor %}
       </div>
       <div class="flex items-center justify-between mt-6">

@@ -1,0 +1,39 @@
+{% extends "store/base.html" %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-10 max-w-lg">
+
+  <h1 class="text-3xl font-serif mb-6">Cancel Order</h1>
+
+  <p class="text-gray-600 mb-4">
+    Please tell us why you want to cancel your order.  
+    Your feedback helps us improve.
+  </p>
+
+  <form method="POST" enctype="multipart/form-data"
+        class="bg-white p-6 rounded-xl shadow space-y-5">
+    {% csrf_token %}
+
+    <!-- Reason -->
+    <div>
+      <label class="block font-medium mb-1">Reason for cancellation</label>
+      <textarea name="reason" rows="4" required
+        class="w-full border rounded px-3 py-2"></textarea>
+    </div>
+
+    <!-- Photo -->
+    <div>
+      <label class="block font-medium mb-1">Upload Photo (optional)</label>
+      <input type="file" name="photo"
+             accept="image/*"
+             class="border w-full rounded px-3 py-2">
+    </div>
+
+    <button type="submit"
+      class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition">
+      Submit Cancellation Request
+    </button>
+  </form>
+
+</div>
+{% endblock %}

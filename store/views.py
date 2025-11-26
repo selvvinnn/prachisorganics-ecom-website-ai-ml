@@ -10,6 +10,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 from .models import (
@@ -24,8 +26,8 @@ from .models import (
     ContactMessage,
     CustomUser,
     Coupon,
+    CancellationRequest
 )
-
 
 def signup_view(request):
     if request.method == 'POST':
@@ -732,6 +734,32 @@ def checkout_view(request):
 
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
 
+@login_required
+def reorder(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    for item in order.items.all():
+        Cart.objects.create(
+            user=request.user,
+            product=item.product,
+            quantity=item.quantity
+        )
+
+    messages.success(request, "Items added to cart.")
+    return redirect("/cart/")
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+    if order.status not in ["pending", "processing"]:
+        messages.error(request, "Order cannot be canceled.")
+        return redirect("/profile/")
+
+    order.status = "cancelled"
+    order.save()
+    messages.success(request, "Order canceled successfully.")
+    return redirect("/profile/")
 
 
 
@@ -905,4 +933,67 @@ def verify_payment(request):
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
 
 
+@login_required
+def cancel_order_request(request, order_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
 
+    # Ensure cancel only allowed
+    if order.status not in ["pending", "processing"]:
+        messages.error(request, "This order cannot be canceled.")
+        return redirect("/profile/")
+
+    if request.method == "POST":
+        reason = request.POST.get("reason")
+        photo = request.FILES.get("photo")
+
+        # Save cancellation
+        CancellationRequest.objects.create(
+            order=order,
+            reason=reason,
+            photo=photo
+        )
+
+        # Update order status
+        order.status = "cancel_requested"
+        order.save()
+
+        # Send Email
+        send_mail(
+            subject="Order Cancellation Request Received",
+            message=f"Your cancellation request for Order #{order.id} has been received.\n\nReason:\n{reason}",
+            from_email="support@prachisorganics.com",
+            recipient_list=[request.user.email],
+            fail_silently=True,
+        )
+
+        return redirect(f"/cancel-order/{order.id}/confirmed/")
+
+    return render(request, "cancel_order_form.html", {"order": order})
+
+
+@login_required
+def cancel_order_confirmed(request, order_id):
+    return render(request, "cancel_confirmed.html")
+
+
+@staff_member_required
+def admin_approve_cancel(request, cancel_id):
+    cancel = get_object_or_404(CancellationRequest, id=cancel_id)
+    order = cancel.order
+
+    order.status = "cancelled"
+    order.save()
+
+    messages.success(request, f"Order #{order.id} has been cancelled.")
+    return redirect("/admin/store/cancellationrequest/")
+
+@staff_member_required
+def admin_reject_cancel(request, cancel_id):
+    cancel = get_object_or_404(CancellationRequest, id=cancel_id)
+    order = cancel.order
+
+    order.status = "processing"
+    order.save()
+
+    messages.error(request, f"Cancellation for Order #{order.id} was rejected.")
+    return redirect("/admin/store/cancellationrequest/")

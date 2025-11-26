@@ -36,6 +36,13 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('order-success/', TemplateView.as_view(template_name='store/order_success.html'), name='order_success'),
+    path("reorder/<int:order_id>/", views.reorder, name="reorder"),
+    path("cancel-order/<int:order_id>/", views.cancel_order, name="cancel_order"),
+    path("cancel-order/<int:order_id>/request/", views.cancel_order_request, name="cancel_order_request"),
+    path("cancel-order/<int:order_id>/confirmed/", views.cancel_order_confirmed, name="cancel_order_confirmed"),
+    path("admin/cancel/<int:cancel_id>/approve/", views.admin_approve_cancel, name="admin_approve_cancel"),
+    path("admin/cancel/<int:cancel_id>/reject/", views.admin_reject_cancel, name="admin_reject_cancel"),
+
 
 ]
 
