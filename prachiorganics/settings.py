@@ -171,6 +171,20 @@ RP_KEY_SECRET= "92jwXShELOIzfNE71noJfSKY"
 
 import dj_database_url
 
+"""
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': 'tramway.proxy.rlwy.net',
+        'PORT': '53906',
+    
+    }
+        
+}
+"""
 DATABASE = {
     'default': dj_database_url.config(
         default="postgresql://neondb_owner:npg_F2lGtZOCvp7X@ep-super-shadow-a1btkpz9-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require",
