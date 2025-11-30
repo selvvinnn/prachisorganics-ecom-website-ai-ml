@@ -1,235 +1,215 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Prachi's Organics{% endblock %}</title>
-    <link rel="icon" href="/media/icons/prachisorganics_logo.png" type="image/x-icon">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Font Awesome CDN -->
-  <link
-rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-integrity="sha512-rXnZyQwGQ3p8m2CWhdDL9nUgU3H6yXc3y3Rzv8z5hJHtK5gYz8nRrWrY+LW0V8P5pJoN5nBxDo4QmGkx5oTn3A=="
-crossorigin="anonymous"
-referrerpolicy="no-referrer" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prachi's Organics</title>
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              brandBrown: '#996d47',
-              brandGreen: '#7faa18',
-              brandBeige: '#fff8e9',
-            },
-            fontFamily: {
-              serif: ['Playfair Display', 'serif'],
-              sans: ['Inter', 'ui-sans-serif', 'system-ui'],
-            }
-          }
-        }
-      }
-    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <style>
-  html, body {
-    overflow-x: hidden !important;
-  }
-  #mobileMenu {
-    overflow-x: hidden !important;
-    max-width: 100% !important;
-  }
+        .modal-bg {
+            backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.45);
+        }
+        .fade-in { animation: fadeIn .25s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+
+<body class="bg-grey-100">
+<!-- OFFER BAR (scrolls away) -->
+<div id="offerBar" class="w-full bg-[#7FAC6E] text-white py-2 overflow-hidden">
+    <div class="animate-offer-text whitespace-nowrap text-center text-sm md:text-base">
+        🎉 Flat 20% OFF on all organic skincare • Free Shipping over ₹999 • Cash on Delivery Available 🎉
+    </div>
+</div>
+
+<style>
+@keyframes offerScroll {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.animate-offer-text {
+    display: inline-block;
+    animation: offerScroll 12s linear infinite;
+}
 </style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-{% load currency %}
-</head>
-<body class="bg-brandBeige text-brandBrown font-sans">
-    <div class="w-full bg-brandGreen text-white text-sm">
-        <div class="container mx-auto px-4 relative overflow-hidden">
-            <div class="flex w-full">
-                <div class="relative w-full h-10">
-                  <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-500" style="opacity:1" id="offer-slide-0">
-                    {% if header_offers|length > 0 %}
-                      <div class="text-center">
-                        <span class="font-semibold">{{ header_offers.0.title }}</span>
-                        {% if header_offers.0.subtitle %}<span class="ml-2">{{ header_offers.0.subtitle }}</span>{% endif %}
-                        {% if header_offers.0.cta_url and header_offers.0.cta_text %}
-                          <a href="{{ header_offers.0.cta_url }}" class="underline ml-3">{{ header_offers.0.cta_text }}</a>
-                        {% endif %}
-                      </div>
-                    {% else %}
-                      <div>Free shipping on orders over $50! | 100% Organic • Cruelty-Free • Handmade</div>
-                    {% endif %}
-                  </div>
-                  <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-500" style="opacity:0" id="offer-slide-1">
-                    {% if header_offers|length > 1 %}
-                      <div class="text-center">
-                        <span class="font-semibold">{{ header_offers.1.title }}</span>
-                        {% if header_offers.1.subtitle %}<span class="ml-2">{{ header_offers.1.subtitle }}</span>{% endif %}
-                        {% if header_offers.1.cta_url and header_offers.1.cta_text %}
-                          <a href="{{ header_offers.1.cta_url }}" class="underline ml-3">{{ header_offers.1.cta_text }}</a>
-                        {% endif %}
-                      </div>
-                    {% endif %}
-                  </div>
-                  <div class="absolute inset-0 flex items-center justify-center transition-opacity duration-500" style="opacity:0" id="offer-slide-2">
-                    {% if header_offers|length > 2 %}
-                      <div class="text-center">
-                        <span class="font-semibold">{{ header_offers.2.title }}</span>
-                        {% if header_offers.2.subtitle %}<span class="ml-2">{{ header_offers.2.subtitle }}</span>{% endif %}
-                        {% if header_offers.2.cta_url and header_offers.2.cta_text %}
-                          <a href="{{ header_offers.2.cta_url }}" class="underline ml-3">{{ header_offers.2.cta_text }}</a>
-                        {% endif %}
-                      </div>
-                    {% endif %}
-                  </div>
+<style>
+    .header-offset {
+        margin-top: 40px; /* ✔ FIXED: push header below offer bar */
+    }
+</style>
+<!-- ================= HEADER ================= -->
+<div class="header-offset">
+<header id="mainHeader"
+        class="fixed left-0 w-full z-50 bg-white/20 backdrop-blur-xl shadow-sm transition-all duration-300"
+        style="top: 40px;">
+
+        <div class="relative w-full px-6 py-4 flex items-center">
+            <!-- increased px from 4 → 6 -->
+
+            <!-- HAMBURGER - shifted further left using left-2 -->
+            <div class="absolute left-4 text-3xl cursor-pointer text-[#7FAC6E] hover:text-[#8B4513]" onclick="openMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <!-- CENTER LOGO + TEXT -->
+            <a href="/" class="w-full flex justify-center items-center space-x-4">
+
+                <div class="h-12 flex items-center">
+                    <img src="/media/icons/logo_po.png"
+                         class="h-full scale-125 md:scale-[2.2] object-contain "
+                         alt="Logo">
                 </div>
+
+                <span
+                    class="text-2xl md:text-3xl font-serif font-normal"
+                    style="
+                        color: #B98A5A;
+                        -webkit-text-stroke: 0.5px #CFA278;
+                    "
+                ></span>
+
+            </a>
+
+            <!-- RIGHT ICONS - evenly spaced -->
+            <div class="flex items-center gap-4 text-brandBrown text-sm font-medium">
+                        <div class="relative flex items-center">
+                    <button id="searchToggle" class="text-[#7FAC6E] hover:text-[#8B4513]">
+                        <i class="fa fa-search"></i>
+                    </button>
+
+                    <input
+                        id="headerSearch"
+                        type="text"
+                        placeholder="Search..."
+                        class="hidden md:block border border-gray-300 rounded-full px-4 py-1
+                               transition-all duration-300 w-0 opacity-0 absolute right-10"
+                    >
+                </div>
+                {% if request.user.is_authenticated %}
+                  <a href="/profile/" class="text-[#7FAC6E] hover:text-[#8B4513]"><i class="fa-regular fa-user"></i></a>
+                  <a href="/logout/" class="text-[#7FAC6E] hover:text-[#8B4513]"><i class="fa-solid fa-right-from-bracket"></i></a>
+                {% else %}
+                  <a href="/login/" class="text-[#7FAC6E] hover:text-[#8B4513"><i class="fa-regular fa-user"></i> </a>
+                  <a href="/signup/" class="text-[#7FAC6E] hover:text-[#8B4513"><i class="fa-solid fa-user-plus"></i> </a>
+                {% endif %}
+                <a href="/cart/" class="relative text-[#7FAC6E] hover:text-[#8B4513]"><i class="fa fa-shopping-cart"></i> 
+                  <span
+                        class="absolute -top-2 -right-3 bg-black text-white text-xs
+                               w-4 h-4 flex items-center justify-center rounded-full">
+                        {{ cart_count }}
+                    </span></a>
               </div>
-        </div>
-    </div>
-    <script>
-      (function(){
-        const slides = [
-          document.getElementById('offer-slide-0'),
-          document.getElementById('offer-slide-1'),
-          document.getElementById('offer-slide-2')
-        ].filter(Boolean);
-        if(!slides.length) return;
-        let i = 0;
-        setInterval(()=>{
-          const prev = slides[i];
-          i = (i + 1) % slides.length;
-          const next = slides[i];
-          if(prev){ prev.style.opacity = 0; }
-          if(next){ next.style.opacity = 1; }
-        }, 4000);
-      })();
-    </script>
-
-<header class="bg-white/90 backdrop-blur sticky top-0 z-30 shadow">
-  <div class="container mx-auto px-4 py-3 grid  items-center">
-    <!-- LOGO -->
-    <a href="/" class="text-xl md:text-2xl font-serif font-semibold text-brandBrown flex justify-center">
-      <img src="/media/icons/logo_po.png" alt="Prachi's Organics Logo" class="h-20 w-auto" />
-    </a>
-
-
-
-<!-- RIGHT SIDE -->
-<div class="flex items-center gap-4 text-brandBrown text-sm font-medium">
-  {% if request.user.is_authenticated %}
-    <a href="/profile/" class="hover:text-brandGreen flex items-center gap-1"><i class="fa-regular fa-user"></i> Account</a>
-    <a href="/logout/" class="hover:text-brandGreen flex items-center gap-1"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-  {% else %}
-    <a href="/login/" class="hover:text-brandGreen flex items-center gap-1"><i class="fa-regular fa-user"></i> Login</a>
-    <a href="/signup/" class="hover:text-brandGreen flex items-center gap-1"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
-  {% endif %}
-  <a href="/cart/" class="hover:text-brandGreen flex items-center gap-1"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
-</div>
-  </div>
-
-  <!-- NAVBAR LINKS (Desktop Only) -->
-  <nav class="hidden md:flex justify-center gap-6 py-2 text-brandBrown font-medium border-t border-gray-100">
-    <div class="group relative">
-      <a class="hover:text-brandGreen" href="/products/?category=skin-care">Face</a>
-      <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition absolute left-0 mt-3 bg-white shadow-lg rounded p-6 grid grid-cols-3 gap-4 w-[700px] max-h-[60vh] overflow-auto">
-        {% for p in nav_face_products %}
-          <a class="text-sm hover:text-brandGreen" href="/products/{{ p.slug }}/">{{ p.name }}</a>
-        {% empty %}
-          <span class="text-gray-500 text-sm">No products yet.</span>
-        {% endfor %}
-      </div>
-    </div>
-
-    <div class="group relative">
-      <a class="hover:text-brandGreen" href="/products/?category=hair-care">Hair</a>
-      <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition absolute left-0 mt-3 bg-white shadow-lg rounded p-6 grid grid-cols-3 gap-4 w-[700px] max-h-[60vh] overflow-auto">
-        {% for p in nav_hair_products %}
-          <a class="text-sm hover:text-brandGreen" href="/products/{{ p.slug }}/">{{ p.name }}</a>
-        {% empty %}
-          <span class="text-gray-500 text-sm">No products yet.</span>
-        {% endfor %}
-      </div>
-    </div>
-
-    <div class="group relative">
-      <a class="hover:text-brandGreen" href="/products/?category=body-care">Body</a>
-      <div class="invisible opacity-0 group-hover:visible group-hover:opacity-100 transition absolute left-0 mt-3 bg-white shadow-lg rounded p-6 grid grid-cols-3 gap-4 w-[700px] max-h-[60vh] overflow-auto">
-        {% for p in nav_body_products %}
-          <a class="text-sm hover:text-brandGreen" href="/products/{{ p.slug }}/">{{ p.name }}</a>
-        {% empty %}
-          <span class="text-gray-500 text-sm">No products yet.</span>
-        {% endfor %}
-      </div>
-    </div>
-
-    <a class="hover:text-brandGreen" href="/combos/">Combos</a>
-    <a class="hover:text-brandGreen" href="/about/">About Us</a>
-    <a class="hover:text-brandGreen" href="/contact/">Contact</a>
-    <a class="hover:text-brandGreen" href="/track_order/">Track Order</a>
-  </nav>
-
-  <!-- 🌿 Mobile Menu Drawer -->
-  <div id="mobileMenu"
-       class="fixed top-0 right-0 h-full w-full bg-white z-[200] transform translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
-    <div class="flex justify-between items-center p-4 border-b border-gray-200 sticky top-0 bg-white">
-      <span class="text-lg font-semibold text-brandBrown">Menu</span>
-      <button id="menu-close" class="text-2xl text-brandBrown focus:outline-none hover:rotate-90 transition-transform">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="flex flex-col p-6 text-brandBrown text-base space-y-5">
-      {% if request.user.is_authenticated %}
-        <a href="/profile/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Account</a>
-        <a href="/logout/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
-      {% else %}
-        <a href="/login/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-regular fa-user"></i> Login</a>
-        <a href="/signup/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-user-plus"></i> Sign Up</a>
-      {% endif %}
-      <a href="/cart/" class="flex items-center gap-3 hover:text-brandGreen transition"><i class="fa-solid fa-cart-shopping"></i> Cart</a>
-
-      <hr class="my-2 border-gray-300" />
-      <a href="/products/?category=skin-care" class="hover:text-brandGreen transition">Face Care</a>
-      <a href="/products/?category=hair-care" class="hover:text-brandGreen transition">Hair Care</a>
-      <a href="/products/?category=body-care" class="hover:text-brandGreen transition">Body Care</a>
-      <a href="/products/" class="hover:text-brandGreen transition">All Products</a>
-      <a href="/combos/" class="hover:text-brandGreen transition">Combos</a>
-      <a href="/track-order/" class="hover:text-brandGreen transition">Track Order</a>
-      <a href="/about/" class="hover:text-brandGreen transition">About</a>
-      <a href="/contact/" class="hover:text-brandGreen transition">Contact</a>
-      <a href="/terms/" class="hover:text-brandGreen transition">Terms & Conditions</a>
-      <a href="/privacy/" class="hover:text-brandGreen transition">Privacy Policy</a>
-      <a href="/returns/" class="hover:text-brandGreen transition">Return & Refund Policy</a>
-
-      <a href="/contact/" class="bg-brandGreen text-white py-2 rounded-lg text-center hover:bg-[#6f9213] transition">Contact Us</a>
-    </div>
-  </div>
-
-  <div id="menuBackdrop" class="fixed inset-0 bg-black/40 hidden z-[190]"></div>
+          </div>
 
 </header>
+    <script>
+window.addEventListener("scroll", function () {
+    const header = document.getElementById("mainHeader");
+
+    if (window.scrollY > 10) {
+        header.style.top = "0px";   // move header to top
+    } else {
+        header.style.top = "40px";  // push header under offer bar
+    }
+});
+</script>
+
+</div>
 
 
-    {% if messages %}
-    <div class="container mx-auto px-4 mt-4">
-      {% for message in messages %}
-        <div class="p-3 rounded mb-2 text-white {% if message.tags == 'error' %}bg-red-500{% else %}bg-brandGreen{% endif %}">{{ message }}</div>
-      {% endfor %}
+<div class="pt-10"></div>
+
+<!-- =============== MOBILE MENU DRAWER =============== -->
+<div id="mobileMenu"
+     class="fixed top-0 left-0 w-64 h-full bg-white shadow-xl transform -translate-x-full transition-transform duration-300 z-50">
+
+    <div class="p-4 border-b flex justify-between items-center">
+        <span class="text-xl font-semibold">Menu</span>
+        <button onclick="closeMenu()" class="text-2xl">&times;</button>
     </div>
-    {% endif %}
 
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+    <nav class="flex flex-col p-4 space-y-4 text-lg">
+        <a href="/" class="hover:text-purple-600">Home</a>
+        <a href="/products" class="hover:text-purple-600">Shop</a>
+        <a href="/about" class="hover:text-purple-600">About</a>
+        <a href="/contact" class="hover:text-purple-600">Contact</a>
+    </nav>
+</div>
 
-    <footer class="mt-16 bg-white">
+<script>
+function openMenu() {
+    document.getElementById("mobileMenu").style.transform = "translateX(0)";
+}
+function closeMenu() {
+    document.getElementById("mobileMenu").style.transform = "translateX(-100%)";
+}
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleBtn = document.getElementById("searchToggle");
+    const searchInput = document.getElementById("headerSearch");
+
+    // --- OPEN Search Bar ---
+    toggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // Prevent closing when clicking button itself
+
+        toggleBtn.classList.add("hidden"); // Hide search icon
+
+        // Expand search bar
+        searchInput.classList.remove("hidden", "w-0", "opacity-0");
+        searchInput.classList.add("w-64", "opacity-100");
+
+        searchInput.focus();
+    });
+
+    // --- CLICK ANYWHERE OUTSIDE TO CLOSE (ONLY IF EMPTY) ---
+    window.addEventListener("click", (e) => {
+        // If click is inside search input → do nothing
+        if (searchInput.contains(e.target)) return;
+
+        // If input has text → DO NOT close
+        if (searchInput.value.trim() !== "") return;
+
+        // Collapse search bar only if empty
+        searchInput.classList.remove("w-64", "opacity-100");
+        searchInput.classList.add("w-0", "opacity-0");
+
+        // Fully hide after animation delay
+        setTimeout(() => {
+            if (searchInput.value.trim() === "") {
+                searchInput.classList.add("hidden");
+                toggleBtn.classList.remove("hidden"); // Bring icon back
+            }
+        }, 250);
+    });
+});
+</script>
+
+
+
+<!-- ================= CONTENT ================= -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="mt-16 bg-white">
       <div class="container mx-auto px-4 py-12 grid md:grid-cols-4 gap-8 animate-fade-up">
         <!-- Brand -->
         <div>
@@ -238,7 +218,7 @@ referrerpolicy="no-referrer" />
             {{ site_settings.brand_tagline|default:"Nourish your natural beauty with organic, cruelty-free care." }}
           </p>
         </div>
-    
+
         <!-- Quick Links -->
         <div>
           <div class="font-semibold mb-2">Quick Links</div>
@@ -276,7 +256,7 @@ referrerpolicy="no-referrer" />
               var to = d.getElementsByTagName('script')[0];
               to.parentNode.insertBefore(s, to);
             })();</script></div>
-    
+
         <!-- Contact -->
         <div>
           <div class="font-semibold mb-2">Contact Us</div>
@@ -286,8 +266,8 @@ referrerpolicy="no-referrer" />
           </ul>
         </div>
 
-        
-    
+
+
         <!-- Social Media -->
         <div>
           <div class="font-semibold mb-2">Follow Us</div>
@@ -299,7 +279,7 @@ referrerpolicy="no-referrer" />
                 <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.9.3 2.4.5.6.2 1 .5 1.5 1s.8.9 1 1.5c.2.5.4 1.2.5 2.4.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 1.9-.5 2.4-.2.6-.5 1-1 1.5s-.9.8-1.5 1c-.5.2-1.2.4-2.4.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.9-.3-2.4-.5-.6-.2-1-.5-1.5-1s-.8-.9-1-1.5c-.2-.5-.4-1.2-.5-2.4C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-1.9.5-2.4.2-.6.5-1 1-1.5s.9-.8 1.5-1c.5-.2 1.2-.4 2.4-.5C8.4 2.2 8.8 2.2 12 2.2zm0 2.1c-3.1 0-3.5 0-4.7.1-1 .1-1.6.2-1.9.3-.5.2-.8.4-1.1.7-.3.3-.5.6-.7 1.1-.1.3-.2.9-.3 1.9-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c.1 1 .2 1.6.3 1.9.2.5.4.8.7 1.1.3.3.6.5 1.1.7.3.1.9.2 1.9.3 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1-.1 1.6-.2 1.9-.3.5-.2.8-.4 1.1-.7.3-.3.5-.6.7-1.1.1-.3.2-.9.3-1.9.1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c-.1-1-.2-1.6-.3-1.9-.2-.5-.4-.8-.7-1.1-.3-.3-.6-.5-1.1-.7-.3-.1-.9-.2-1.9-.3-1.2-.1-1.6-.1-4.7-.1zm0 3.1a4.9 4.9 0 1 1 0 9.8 4.9 4.9 0 0 1 0-9.8zm0 2.1a2.8 2.8 0 1 0 0 5.7 2.8 2.8 0 0 0 0-5.7zm4.9-2.8a1.1 1.1 0 1 1 0 2.2 1.1 1.1 0 0 1 0-2.2z"/>
               </svg>
             </a>
-    
+
             <!-- Facebook -->
             <a href="{{ site_settings.facebook_url|default:'#' }}" target="_blank" rel="noopener"
               class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen">
@@ -307,7 +287,7 @@ referrerpolicy="no-referrer" />
                 <path d="M22 12a10 10 0 1 0-11.6 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.1 1.8.1v2h-1c-1 0-1.3.6-1.3 1.2V12h2.2l-.4 3h-1.8v7A10 10 0 0 0 22 12"/>
               </svg>
             </a>
-    
+
             <!-- Twitter (X) -->
             <a href="{{ site_settings.twitter_url|default:'#' }}" target="_blank" rel="noopener"
               class="transition-transform hover:-translate-y-0.5 hover:text-brandGreen">
@@ -319,7 +299,7 @@ referrerpolicy="no-referrer" />
         </div>
       </div>
 
-      
+
       <div class="border-t py-4 text-xs text-gray-500">
         <div class="container mx-auto px-4 text-center">
 
@@ -327,80 +307,6 @@ referrerpolicy="no-referrer" />
         </div>
       </div>
     </footer>
-    
-    <style>
-      @keyframes fadeUp {
-        from { opacity: 0; transform: translateY(8px);}
-        to { opacity: 1; transform: translateY(0);}
-      }
-      .animate-fade-up { animation: fadeUp .7s ease-out both; }
-    </style>
-
-
- <script>
-  // Select elements
-  const menuToggle = document.getElementById("menu-toggle");
-  const menuClose = document.getElementById("menu-close");
-  const mobileMenu = document.getElementById("mobileMenu");
-const menuBackdrop = document.getElementById("menuBackdrop");
-
-  // Function to open menu
-  menuToggle?.addEventListener("click", () => {
-  mobileMenu.classList.remove("translate-x-full");
-  mobileMenu.classList.add("translate-x-0");
-  menuBackdrop.classList.remove("hidden");
-  document.body.classList.add("overflow-hidden");
-  });
-
-  // Function to close menu
-  const closeMenu = () => {
-  mobileMenu.classList.add("translate-x-full");
-  mobileMenu.classList.remove("translate-x-0");
-  menuBackdrop.classList.add("hidden");
-  document.body.classList.remove("overflow-hidden");
-  };
-
-  menuClose?.addEventListener("click", closeMenu);
-menuBackdrop?.addEventListener("click", closeMenu);
-</script>
-
-
-<div style="width: 0; height: 0;" id="VG_OVERLAY_CONTAINER">
-    <!-- Here is where CONVOCORE renders the widget. -->
-    <!-- Set render to 'full-width' then adjust the width and height to 500px (for example) to render the chatbot itself without the popup. -->
-</div>
-
-<!-- Remove 'defer' if you want widget to load faster (Will affect website loading) -->
-<script defer>
-    (function() {
-        window.VG_CONFIG = {
-            ID: "qfc7xnm3ts10v8wg", // YOUR AGENT ID
-            region: 'na', // YOUR ACCOUNT REGION 
-            render: 'bottom-right', // can be 'full-width' or 'bottom-left' or 'bottom-right'
-            // modalMode: true, // Set this to 'true' to open the widget in modal mode
-            stylesheets: [
-                // Base CONVOCORE CSS
-                "https://vg-bunny-cdn.b-cdn.net/vg_live_build/styles.css",
-                // Add your custom css stylesheets, Can also add relative URL ('/public/your-file.css)
-            ],
-            // THIS IS SUPPOSED TO BE CHANGED OR REMOVED.
-            // user: {
-            //     name: 'John Doe', // User's name
-            //     email: 'johndoe@gmail.com', // User's email
-            //     phone: '+1234567890', // User's phone number
-            // }
-            // Optional user data -- end
-            // **
-            // userID: 'USER_ID', // If you want to use your own user_id
-            // autostart: true, // Whether to autostart the chatbot with the proactive message
-        }
-        var VG_SCRIPT = document.createElement("script");
-        VG_SCRIPT.src = "https://vg-bunny-cdn.b-cdn.net/vg_live_build/vg_bundle.js";
-        VG_SCRIPT.defer = true; // Remove 'defer' if you want widget to load faster (Will affect website loading)
-        document.body.appendChild(VG_SCRIPT);
-    })()
-</script>
-
 
 </body>
 </html>

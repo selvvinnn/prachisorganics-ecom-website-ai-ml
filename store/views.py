@@ -28,6 +28,99 @@ from .models import (
     Coupon,
     CancellationRequest
 )
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_POST
+from .models import Product, ComboDeal, CartItem, Cart
+from .utils import get_or_create_cart
+from django.contrib import messages 
+
+@require_POST
+def add_to_cart(request, product_slug):
+    """
+    POST endpoint matching path('cart/add/<slug:product_slug>/', ...)
+    - If product exists, add/increment CartItem for that product.
+    - If product_slug corresponds to a product. (If you want combos via slug, adapt accordingly.)
+    """
+    cart = get_or_create_cart(request)
+
+    # try product first
+    product = get_object_or_404(Product, slug=product_slug, is_available=True)
+
+    # Check if CartItem for this product already exists in the cart
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product,
+        defaults={'quantity': 1, 'unit_price': product.get_display_price()}
+    )
+
+    if not created:
+        item.quantity += 1
+        # update unit_price if needed (keep previous if set)
+        if item.unit_price is None:
+            item.unit_price = product.get_display_price()
+        item.save()
+
+    messages.success(request, f"Added {product.name} to cart.")
+    return redirect(request.META.get('HTTP_REFERER', reverse('cart')))
+
+@require_POST
+def update_cart(request, item_id):
+    """
+    path('cart/update/<int:item_id>/', name='update_cart')
+    Expects POST with 'quantity' value (int).
+    If quantity <= 0, item removed.
+    """
+    cart = get_or_create_cart(request)
+    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+
+    try:
+        qty = int(request.POST.get('quantity', item.quantity))
+    except (ValueError, TypeError):
+        qty = item.quantity
+
+    if qty <= 0:
+        item.delete()
+        messages.info(request, f"Removed {item.get_name()} from cart.")
+    else:
+        item.quantity = qty
+        item.save()
+        messages.success(request, f"Updated quantity for {item.get_name()}.")
+
+    return redirect(request.META.get('HTTP_REFERER', reverse('cart')))
+
+
+@require_POST
+def remove_from_cart(request, item_id):
+    """
+    path('cart/remove/<int:item_id>/', name='remove_from_cart')
+    """
+    cart = get_or_create_cart(request)
+    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    item.delete()
+    messages.info(request, f"Removed {item.get_name()} from cart.")
+    return redirect(request.META.get('HTTP_REFERER', reverse('cart')))
+
+def cart_view(request):
+    """
+    path('cart/', name='cart')
+    Show cart items and total.
+    """
+    cart = get_or_create_cart(request)
+    items = cart.items.select_related('product', 'combo_deal').all()
+
+    total = sum(item.line_total() for item in items)
+    item_count = sum(item.quantity for item in items)
+
+    context = {
+        'cart': cart,
+        'cart_items': items,
+        'cart_total': total,
+        'cart_item_count': item_count,
+    }
+    return render(request, 'store/cart.html', context)
+
+
 
 def signup_view(request):
     if request.method == 'POST':
@@ -391,6 +484,25 @@ def add_to_cart(request, product_slug):
 
 from django.contrib.auth.decorators import login_required
 
+def home_view(request):
+    # ---------- CART COUNT ----------
+    cart = request.session.get('cart', {})
+    cart_count = sum(item.get('quantity', 1) for item in cart.values())
+
+    # ---------- EXISTING DATA ----------
+    featured_products = Product.objects.filter(is_available=True)[:4]
+    combos = ComboDeal.objects.all()[:4]
+    categories = Category.objects.all()
+    recent_reviews = Review.objects.select_related('product', 'user').order_by('-created_at')[:10]
+
+    return render(request, 'store/index.html', {
+        'featured_products': featured_products,
+        'combos': combos,
+        'categories': categories,
+        'steps': [1, 2, 3, 4],
+        'recent_reviews': recent_reviews,
+        'cart_count': cart_count,   # <-- ADD THIS
+    })
 
 @login_required
 def profile(request):

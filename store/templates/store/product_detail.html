@@ -27,7 +27,7 @@
       <form method="post" action="" class="flex items-center gap-3">{% csrf_token %}
         <input type="hidden" name="action" value="add_to_cart">
         <input name="quantity" type="number" min="1" value="1" class="border rounded px-3 py-2 w-24">
-        <button class="bg-brandGreen text-white px-6 py-2 rounded" type="submit">Add to Cart</button>
+        <button class="inline-block px-5 py-2 border border-brandGreen text-brandGreen rounded-full hover:bg-brandGreen hover:text-[#8B4513] transition" type="submit">Add to Cart</button>
       </form>
       <div class="mt-8">
         <div class="text-sm text-gray-600">Category: {{ product.category.name }}</div>
@@ -300,15 +300,15 @@
         <p class="text-xs text-gray-500 mt-1">Upload a photo to show how the product worked for you</p>
       </div>
 
-      <button type="submit" class="bg-brandGreen text-white px-6 py-3 rounded-lg bg-brandGreen hover:bg-brandBrown hover:text-white transition:transition">
+      <button type="submit" class="inline-block px-5 py-2 border border-brandGreen text-brandGreen rounded-full hover:bg-brandGreen hover:text-[#8B4513] transition">
         Submit Review
       </button>
     </form>
   </div>
 {% else %}
   <div class="border-t pt-8 text-center">
-    <p class="text-gray-600 mb-4">Want to share your experience?</p>
-    <a href="/login/?next={{ request.path }}" class="bg-brandGreen text-white px-6 py-3 rounded-lg hover:bg-green-600 transition inline-block">
+    <p class="text-yellow-800 mb-4">Want to share your experience?</p>
+    <a href="/login/?next={{ request.path }}" class="inline-block px-5 py-2 border border-brandGreen text-brandGreen rounded-full hover:bg-brandGreen hover:text-[#8B4513] transition">
       Login to Write Review
     </a>
   </div>
