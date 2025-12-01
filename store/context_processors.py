@@ -1,5 +1,14 @@
 from .models import SiteSettings, Offer, Category, Product
+from .utils import get_or_create_cart
 
+
+def cart_count(request):
+    try:
+        cart = get_or_create_cart(request)
+        count = cart.items.aggregate(total=models.Sum('quantity'))['total'] or 0
+    except Exception:
+        count = 0
+    return {'cart_count': count}
 
 def site_settings(request):
     settings_obj = None

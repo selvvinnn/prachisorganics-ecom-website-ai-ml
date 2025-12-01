@@ -785,7 +785,7 @@ def checkout_view(request):
                         Q(valid_from__lte=timezone.now()),
                         Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
                     )
-                    discount_amount = subtotal * (applied_coupon.discount_percent / Decimal(100))
+                    discount_amount = subtotal * (applied_coupon.discount_percentage / Decimal(100))
                     final_amount = subtotal - discount_amount
                 except Coupon.DoesNotExist:
                     pass
