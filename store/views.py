@@ -801,7 +801,7 @@ def checkout_view(request):
                 zipcode=zipcode,
                 paid_amount=final_amount,
                 discount_amount=discount_amount,
-                coupon_code=applied_coupon.code if applied_coupon else None,
+                coupon=applied_coupon.code if applied_coupon else None,
                 status='processing',
                 razorpay_order_id=razorpay_order_id,
                 razorpay_payment_id=razorpay_payment_id,
