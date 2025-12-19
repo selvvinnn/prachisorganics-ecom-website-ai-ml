@@ -1,0 +1,69 @@
+{% extends 'store/base.html' %}
+{% load currency %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<section class="container mx-auto px-4 py-10 max-w-5xl">
+
+  <!-- HEADER -->
+  <h1 class="font-serif text-3xl mb-8">
+    Order #{{ order.id }}
+  </h1>
+
+  <!-- ORDER SUMMARY -->
+  <div class="bg-white rounded-2xl shadow-sm border p-6 mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <p><strong>Status:</strong> {{ order.status|title }}</p>
+    <p><strong>Placed On:</strong> {{ order.created_at|date:"d M Y" }}</p>
+    <p><strong>Total:</strong> {{ order.paid_amount|inr }}</p>
+    <p><strong>Payment:</strong> {{ order.payment_method|default:"Online" }}</p>
+  </div>
+
+  <!-- ORDER ITEMS -->
+  <div class="bg-white rounded-2xl shadow-sm border p-6 mb-8">
+    <h2 class="text-xl font-semibold mb-5">Items</h2>
+
+    <div class="space-y-4">
+      {% for item in order.items.all %}
+        <div class="flex items-center justify-between gap-4 border-b pb-4 last:border-b-0">
+
+          <!-- PRODUCT INFO -->
+          <div class="flex items-center gap-4">
+            {% if item.product.image %}
+              <img src="{{ item.product.image.url }}"
+                   alt="{{ item.product.name }}"
+                   class="w-16 h-16 rounded-lg object-cover border">
+            {% endif %}
+
+            <div>
+              <div class="font-semibold">{{ item.product.name }}</div>
+              <div class="text-sm text-gray-500">Qty: {{ item.quantity }}</div>
+            </div>
+          </div>
+
+          <!-- PRICE -->
+          <div class="font-semibold text-green-700">
+            {{ item.total_price|inr }}
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- DELIVERY ADDRESS -->
+  <!-- DELIVERY ADDRESS -->
+<div class="bg-white rounded-2xl shadow-sm border p-6">
+  <h2 class="text-xl font-semibold mb-4">Delivery Address</h2>
+
+  <div class="text-gray-700 leading-relaxed">
+    {{ order.first_name }} {{ order.last_name }}<br>
+    {{ order.address }}<br>
+    {{ order.city }} – {{ order.zipcode }}<br>
+    <span class="font-medium">Email:</span> {{ order.email }}
+  </div>
+</div>
+
+
+</section>
+{% endblock %}

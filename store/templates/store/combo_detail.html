@@ -33,9 +33,9 @@
 
       <form method="post" class="mt-6">{% csrf_token %}
         {% if request.user.is_authenticated %}
-          <button class="bg-brandGreen text-white px-6 py-2 rounded" type="submit">Add Combo to Cart</button>
+          <button class="border border-green-500 text-black px-6 py-2 rounded" type="submit">Add Combo to Cart</button>
         {% else %}
-          <a class="bg-brandGreen text-white px-6 py-2 rounded inline-block" href="/login/?next={{ request.path }}">Login to Buy</a>
+          <a class="border border-green-500 bg-brandGreen text-black px-6 py-2 rounded inline-block" href="/login/?next={{ request.path }}">Login to Buy</a>
         {% endif %}
       </form>
       <div class="mt-8">

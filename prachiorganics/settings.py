@@ -32,8 +32,8 @@ SECRET_KEY = 'django-insecure-_)#k=+yh6ru+3^3pr!%!c#3im4--#c9ig4-q=f-j#(#(dzi$*p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://prachisorganics.com','prachisorganics.com', 'www.prachisorganics.com','prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'localhost']
-CSRF_TRUSTED_ORIGINS = ['https://prachisorganics.com','https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
+ALLOWED_HOSTS = ['3.108.249.68','https://prachisorganics.com','prachisorganics.com', 'www.prachisorganics.com','prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app', 'localhost']
+CSRF_TRUSTED_ORIGINS = ['https://3.108.249.68','https://www.prachisorganics.com','http://3.108.249.68', 'http://prachisorganics.com','https://prachisorganics-ecom-website-ai-ml-production-69e6.up.railway.app']
 
 
 # Application definition
@@ -75,6 +75,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'store.context_processors.site_settings',
+                'store.context_processors.cart_count'
             ],
         },
     },

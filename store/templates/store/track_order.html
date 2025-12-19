@@ -6,7 +6,7 @@
 
   <form method="get" class="mb-6 flex flex-col sm:flex-row gap-3">
     <input name="order_id" value="{{ request.GET.order_id }}" placeholder="Enter Order ID (e.g. 1024)" class="border rounded px-3 py-2 flex-1">
-    <button class="bg-brandGreen text-white px-4 py-2 rounded" type="submit">Track</button>
+    <button class="bg-white border border-green-500 hover:bg-green-100 hover:text-[#8B4513] text-black px-4 py-2 rounded" type="submit">Track</button>
   </form>
 
   {% if order %}
@@ -33,16 +33,16 @@
     {% with s=order.status %}
     <div class="mt-6 grid grid-cols-3 md:grid-cols-4 gap-3 text-center">
       <div class="p-3 rounded border {% if s in 'processing,shipped,delivered' %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200{% endif %}">
-        <div class="text-sm font-semibold">Processing</div>
+        <div class="text-sm font-semibold text-[#8B4513]">Processing</div>
       </div>
       <div class="p-3 rounded border {% if s in 'shipped,delivered' %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200{% endif %}">
-        <div class="text-sm font-semibold">Shipped</div>
+        <div class="text-sm font-semibold text-[#8B4513]">Shipped</div>
       </div>
       <div class="p-3 rounded border {% if s == 'delivered' %}bg-green-50 border-green-200{% else %}bg-gray-50 border-gray-200{% endif %}">
-        <div class="text-sm font-semibold">Delivered</div>
+        <div class="text-sm font-semibold text-[#8B4513]">Delivered</div>
       </div>
       <div class="hidden md:block p-3 rounded border {% if s == 'cancelled' %}bg-red-50 border-red-200{% else %}bg-gray-50 border-gray-200{% endif %}">
-        <div class="text-sm font-semibold">Cancelled</div>
+        <div class="text-sm font-semibold text-[#8B4513]">Cancelled</div>
       </div>
     </div>
     {% endwith %}

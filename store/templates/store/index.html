@@ -161,6 +161,48 @@
     background: #7FAC6E;
 }
 
+.feature-marquee {
+  width: 100%;
+  overflow: hidden;
+  background: #eef4ff; /* light pastel like screenshot */
+  padding: 14px 0;
+}
+
+.feature-track {
+  display: inline-flex;
+  white-space: nowrap;
+  gap: 40px;
+  animation: marquee-scroll 10s linear infinite;
+}
+
+.feature-track span {
+  font-size: 18px;
+  font-weight: 500;
+  color: #2f2f2f;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-30%);
+  }
+}
+
+.feature-track span {
+  font-size: 18px;
+  font-weight: 500;
+  color: #7FAC6E; /* brand green */
+  letter-spacing: 0.3px;
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .feature-track span {
+    font-size: 15px;
+  }
+}
 
 
 @keyframes glowing {
@@ -168,6 +210,8 @@
     50% { background-position: 200% 0%; }
     100% { background-position: 0% 0%; }
 }
+
+
 </style>
 
   <section class="relative h-[56vh] md:h-[70vh] overflow-hidden">
@@ -369,6 +413,34 @@
 </section>
 -->
 
+<!-- Infinite Feature Slider -->
+<div class="feature-marquee">
+  <div class="feature-track">
+    <span>Handmade Organic Products</span>
+    <span>•</span>
+    <span>Cruelty Free</span>
+    <span>•</span>
+    <span>Eco-Friendly & Recyclable</span>
+    <span>•</span>
+
+    <!-- duplicate for seamless loop -->
+    <span>Handmade Organic Products</span>
+    <span>•</span>
+    <span>Cruelty Free</span>
+    <span>•</span>
+    <span>Eco-Friendly & Recyclable</span>
+    <span>•</span>
+
+    <span>Handmade Organic Products</span>
+    <span>•</span>
+    <span>Cruelty Free</span>
+    <span>•</span>
+    <span>Eco-Friendly & Recyclable</span>
+    <span>•</span>
+  </div>
+</div>
+
+
    <!-- Featured Products -->
 <section class="container mx-auto px-4 py-12 text-center">
   <h2 class="font-serif text-3xl mb-8 bg-center">Best Sellers</h2>
@@ -474,95 +546,275 @@
   </div>
 </section>
 
-<section class="container mx-auto px-4 py-12 text-center">
-    <h2 class="font-serif text-3xl mb-6 bg-center">Customer Reviews</h2>
-    <div class="relative overflow-hidden rounded-lg">
-      {% if recent_reviews %}
-      <div class="pointer-events-none absolute left-0 top-0 h-full w-16 bg-gradient-to-r from-brandBeige to-transparent"></div>
-      <div class="pointer-events-none absolute right-0 top-0 h-full w-16 bg-gradient-to-l from-brandBeige to-transparent"></div>
-      <div class="flex gap-6 w-[200%] pr-4 pl-4 will-change-transform animate-[reviews-scroll_60s_linear_infinite]">
-        {% for review in recent_reviews %}
-          <div class="{% if review.photo %}min-w-[360px]{% else %}min-w-[320px]{% endif %} bg-white/95 backdrop-blur rounded-xl p-6 border border-gray-100 shadow-sm">
-            <div class="font-semibold mb-1">{{ review.product.name }}</div>
-            <div class="text-yellow-500">{% for i in '12345' %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
-            <p class="text-sm text-gray-700 mt-2 {% if not review.photo %}min-h-12{% endif %}">“{{ review.comment|default:'Great product!' }}”</p>
-            {% if review.photo %}
-              <div class="mt-2">
-                <img src="{{ review.photo.url }}" alt="Review photo" loading="lazy" class="w-full max-w-full max-h-56 object-contain rounded border"/>
-              </div>
-            {% endif %}
-            <div class="text-xs text-gray-400 mt-2">by {{ review.user.username }} · {{ review.created_at|date:'M d, Y' }}</div>
-          </div>
-        {% endfor %}
-        {% for review in recent_reviews %}
-          <div class="{% if review.photo %}min-w-[360px]{% else %}min-w-[320px]{% endif %} bg-white/95 backdrop-blur rounded-xl p-6 border border-gray-100 shadow-sm">
-            <div class="font-semibold mb-1">{{ review.product.name }}</div>
-            <div class="text-yellow-500">{% for i in '12345' %}{% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}{% endfor %}</div>
-            <p class="text-sm text-gray-700 mt-2 {% if not review.photo %}min-h-12{% endif %}">“{{ review.comment|default:'Great product!' }}”</p>
-            {% if review.photo %}
-              <div class="mt-2">
-                <img src="{{ review.photo.url }}" alt="Review photo" loading="lazy" class="w-full max-w-full max-h-56 object-contain rounded border"/>
-              </div>
-            {% endif %}
-            <div class="text-xs text-gray-400 mt-2">by {{ review.user.username }} · {{ review.created_at|date:'M d, Y' }}</div>
-          </div>
-        {% endfor %}
-      </div>
-      {% else %}
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="bg-white/95 backdrop-blur rounded-xl p-6 border border-gray-100 shadow-sm">
-            <div class="font-semibold mb-1">Prachi's Favorite</div>
-            <div class="text-yellow-500">★★★★★</div>
-            <p class="text-sm text-gray-700 mt-2">“Fantastic results! My skin feels so soft.”</p>
-            <div class="text-xs text-gray-400 mt-2">by Happy Customer</div>
-          </div>
-          <div class="bg-white/95 backdrop-blur rounded-xl p-6 border border-gray-100 shadow-sm">
-            <div class="font-semibold mb-1">Top Seller</div>
-            <div class="text-yellow-500">★★★★★</div>
-            <p class="text-sm text-gray-700 mt-2">“Love the texture and natural fragrance.”</p>
-            <div class="text-xs text-gray-400 mt-2">by Verified Buyer</div>
-          </div>
-          <div class="bg-white/95 backdrop-blur rounded-xl p-6 border border-gray-100 shadow-sm">
-            <div class="font-semibold mb-1">Most Loved</div>
-            <div class="text-yellow-500">★★★★★</div>
-            <p class="text-sm text-gray-700 mt-2">“Visible difference in just a week!”</p>
-            <div class="text-xs text-gray-400 mt-2">by Loyal Customer</div>
-          </div>
-        </div>
-      {% endif %}
-      <style>
-        @keyframes reviews-scroll { 0%{ transform: translateX(0);} 100%{ transform: translateX(-50%);} }
-      </style>
-    </div>
-  </section>
+<section class="container mx-auto px-4 py-16 text-center overflow-hidden">
+  <h2 class="font-serif text-3xl mb-12">What Our Customers Say</h2>
 
+  <div class="relative max-w-6xl mx-auto review-wrapper">
+
+    <!-- LEFT ARROW -->
+    <button id="reviewPrev"
+      class="review-arrow left">
+      ‹
+    </button>
+
+    <!-- SLIDER -->
+    <div class="review-track">
+      {% for review in recent_reviews %}
+      <div class="review-slide">
+        <div class="review-inner">
+
+          {% if review.photo %}
+          <img src="{{ review.photo.url }}"
+               class="review-image"
+               alt="Review image">
+          {% endif %}
+
+          <p class="review-text">
+            “{{ review.comment }}”
+          </p>
+
+          <div class="review-user">{{ review.user.username }}</div>
+
+          <div class="review-stars">
+            {% for i in "12345" %}
+              {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- RIGHT ARROW -->
+    <button id="reviewNext"
+      class="review-arrow right">
+      ›
+    </button>
+
+  </div>
+</section>
+
+  <style>
+    /* =============================
+   REVIEW SLIDER – FIXED
+   ============================= */
+
+.review-wrapper {
+  position: relative;
+  height: 420px;
+}
+
+.review-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Base slide */
+.review-slide {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  opacity: 0;
+  transition: all 0.5s ease;
+  z-index: 0;
+}
+
+/* Card */
+.review-inner {
+  width: 340px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(127, 172, 110, 0.2);
+}
+
+/* Image */
+.review-image {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 18px;
+  margin: 0 auto 16px;
+}
+
+/* Text */
+.review-text {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 14px;
+}
+
+.review-user {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.review-stars {
+  color: #f4b400;
+}
+
+/* CENTER */
+.review-slide.center {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  z-index: 3;
+}
+
+.review-slide.center .review-inner {
+  box-shadow:
+    0 30px 70px rgba(127, 172, 110, 0.45),
+    0 12px 28px rgba(127, 172, 110, 0.3);
+}
+
+/* LEFT */
+.review-slide.left {
+  transform: translate(-150%, -50%) scale(0.9);
+  opacity: 0.6;
+  z-index: 2;
+}
+
+/* RIGHT */
+.review-slide.right {
+  transform: translate(50%, -50%) scale(0.9);
+  opacity: 0.6;
+  z-index: 2;
+}
+
+/* ARROWS */
+.review-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  box-shadow: 0 10px 25px rgba(127, 172, 110, 0.35);
+  font-size: 22px;
+  z-index: 5;
+}
+
+.review-arrow.left { left: -10px; }
+.review-arrow.right { right: -10px; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .review-slide.left,
+  .review-slide.right {
+    display: none;
+  }
+
+  .review-inner {
+    width: 90vw;
+  }
+}
+
+    </style>
+</section>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const slides = document.querySelectorAll(".review-slide");
+    let current = 0;
+  
+    function update() {
+      slides.forEach((slide, i) => {
+        slide.className = "review-slide";
+  
+        if (i === current) {
+          slide.classList.add("center");
+        }
+        else if (i === (current - 1 + slides.length) % slides.length) {
+          slide.classList.add("left");
+        }
+        else if (i === (current + 1) % slides.length) {
+          slide.classList.add("right");
+        }
+      });
+    }
+  
+    document.getElementById("reviewNext").onclick = () => {
+      current = (current + 1) % slides.length;
+      update();
+    };
+  
+    document.getElementById("reviewPrev").onclick = () => {
+      current = (current - 1 + slides.length) % slides.length;
+      update();
+    };
+  
+    // Auto slide (optional)
+    setInterval(() => {
+      current = (current + 1) % slides.length;
+      update();
+    }, 6000);
+  
+    update();
+  });
+  </script>
+  
+  
+  
+  
 
   <section class="container mx-auto px-4 md:px-12 lg:px-24 py-12 text-center">
     <h2 class="font-serif text-3xl mb-8 bg-center">Shop by Category</h2>
-    <div class="grid md:grid-cols-3 gap-10 sm:grid-cols-3 align-center">
+  
+    <!-- MOBILE: Horizontal slider -->
+    <div class="flex md:hidden gap-5 overflow-x-auto snap-x snap-mandatory pb-4">
       {% for category in categories %}
-        <a href="/products/?category={{ category.slug }}" class="group bg-white rounded shadow overflow-hidden">
-          <div class="relative h-80 bg-brandBeige overflow-hidden">
+        <a href="/products/?category={{ category.slug }}"
+           class="snap-center min-w-[80%] bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+  
+          <div class="relative aspect-[3/4] bg-brandBeige overflow-hidden">
             {% if category.image %}
-              <img src="{{ category.image.url }}" alt="{{ category.name }}" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
-            {% endif %}
-            {% if category.hover_image %}
-              <img src="{{ category.hover_image.url }}" alt="{{ category.name }} hover" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
-            {% endif %}
-            {% if not category.image and not category.hover_image %}
-              <div class="h-full w-full flex items-center justify-center text-gray-500">{{ category.name }}</div>
+              <img src="{{ category.image.url }}"
+                   alt="{{ category.name }}"
+                   class="absolute inset-0 w-full h-full object-cover"/>
             {% endif %}
           </div>
+  
           <div class="p-4 flex items-center justify-between">
             <div class="font-semibold">{{ category.name }}</div>
-            <div class="text-brandGreen">→</div>
+            <div class="text-brandGreen text-lg">→</div>
           </div>
         </a>
-      {% empty %}
-        <div class="text-gray-500">No categories yet.</div>
+      {% endfor %}
+    </div>
+  
+    <!-- DESKTOP/TABLET GRID -->
+    <div class="hidden md:grid md:grid-cols-3 gap-10">
+      {% for category in categories %}
+        <a href="/products/?category={{ category.slug }}"
+           class="group bg-white rounded-xl shadow overflow-hidden">
+  
+          <div class="relative h-80 bg-brandBeige overflow-hidden">
+            {% if category.image %}
+              <img src="{{ category.image.url }}"
+                   alt="{{ category.name }}"
+                   class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
+            {% endif %}
+            {% if category.hover_image %}
+              <img src="{{ category.hover_image.url }}"
+                   alt="{{ category.name }} hover"
+                   class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
+            {% endif %}
+          </div>
+  
+          <div class="p-4 flex items-center justify-between">
+            <div class="font-semibold">{{ category.name }}</div>
+            <div class="text-brandGreen text-lg">→</div>
+          </div>
+        </a>
       {% endfor %}
     </div>
   </section>
+  
 
   
 
@@ -674,9 +926,6 @@
     </div>
     </div>
   </section>
-
-  
-
 
   
 {% endblock %}

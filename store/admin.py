@@ -44,11 +44,61 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ['name', 'email', 'subject', 'submitted_at']
     list_filter = ['submitted_at']
 
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
+    extra = 0
+    can_delete = False
+
+    readonly_fields = ('product', 'quantity', 'price', 'subtotal')
+
+    def subtotal(self, obj):
+        if obj.price is None or obj.quantity is None:
+            return "—"
+        return f"₹ {obj.quantity * obj.price:.2f}"
+
+    subtotal.short_description = "Subtotal"
+
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'paid_amount', 'status', 'razorpay_order_id', 'razorpay_payment_id', 'created_at')
-    search_fields = ('razorpay_order_id', 'razorpay_payment_id', 'user__username', 'email')
-    readonly_fields = ('razorpay_order_id', 'razorpay_payment_id', 'razorpay_payment_status', 'created_at')
+    list_display = (
+        'id',
+        'user',
+        'paid_amount',
+        'status',
+        'razorpay_order_id',
+        'razorpay_payment_id',
+        'created_at',
+        'ordered_products',
+    )
+
+    search_fields = (
+        'razorpay_order_id',
+        'razorpay_payment_id',
+        'user__username',
+        'email',
+    )
+
+    readonly_fields = (
+        'razorpay_order_id',
+        'razorpay_payment_id',
+        'razorpay_payment_status',
+        'created_at',
+        'ordered_products',
+    )
+
+    inlines = [OrderItemInline]
+
+    def ordered_products(self, obj):
+        return ", ".join(
+            f"{item.product.name} (x{item.quantity})"
+            for item in obj.items.all()
+        )
+
+    ordered_products.short_description = "Products Ordered"
 
 
 @admin.register(OrderItem)

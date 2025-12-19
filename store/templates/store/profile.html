@@ -67,10 +67,11 @@
           <div class="mt-5 flex flex-col gap-3">
 
             <!-- REORDER BUTTON -->
-            <form method="POST" action="/reorder/{{ order.id }}/">
+            <form method="POST" action="{% url 'store:reorder' order.id %}"
+>
               {% csrf_token %}
               <button type="submit"
-                class="w-full text-sm px-4 py-2 rounded-full bg-brandGreen text-white hover:bg-green-700 transition">
+                class="w-full text-sm px-4 py-2 rounded-full border border-green-500 bg-brandGreen text-black hover:bg-green-700 transition">
                 Reorder Items
               </button>
             </form>
@@ -127,7 +128,7 @@
   <!-- CTA BUTTON -->
   <div class="text-center">
     <a href="/products/"
-       class="px-6 py-2 bg-brandGreen text-white rounded-full shadow hover:bg-green-700 transition">
+       class="px-6 py-2 border border-green-500 text-black rounded-full shadow hover:bg-green-100 hover:text-[#8B4513] transition">
        Continue Shopping
     </a>
   </div>

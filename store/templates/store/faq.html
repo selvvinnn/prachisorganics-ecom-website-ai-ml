@@ -1,27 +1,77 @@
 {% extends 'store/base.html' %}
-{% block title %}FaQ · Prachi's Organics{% endblock %}
+{% block title %}FAQ · Prachi's Organics{% endblock %}
 {% block content %}
+
 <section class="container mx-auto px-4 py-12 max-w-3xl">
-  <h1 class="font-serif text-3xl mb-6">FAQ</h1>
-  <p class="text-gray-700 mb-4">Are all your products 100% organic and natural? <br>
+    <h1 class="font-serif text-3xl mb-8 text-center">Frequently Asked Questions</h1>
 
-Yes! We use only certified organic ingredients with no synthetic additives, parabens, or sulfates.
-<br>
-Do you have certifications for organic ingredients?
-<br>
-Yes, our products are certified by [USDA Organic / Ecocert / Other Certification].
-<br>
-Do you use artificial fragrances or preservatives?
-<br>
-No, we only use natural essential oils and plant-based preservatives.
-<br>
-Is your packaging eco-friendly?
-<br>
-Yes! We use recyclable, biodegradable, and plastic-free packaging whenever possible.
-<br>
-How do I return a product if Im not satisfied?
-<br>
-We offer a hassle-free return policy. Please check our [Returns & Refunds] page for details.</p>
+    <!-- Alpine.js for dropdown logic -->
+    <div x-data="{ open: null }" class="space-y-4">
 
+        <!-- FAQ Item -->
+        <div class="border rounded-lg p-4 bg-white shadow-sm">
+            <button class="w-full flex justify-between items-center text-left font-medium"
+                    @click="open === 1 ? open = null : open = 1">
+                <span>Are all your products 100% organic and natural?</span>
+                <span :class="open === 1 ? 'rotate-180' : ''" class="transition-transform">&#9662;</span>
+            </button>
+            <div x-show="open === 1" x-collapse class="mt-2 text-gray-600">
+                Yes! We use only certified organic ingredients with zero synthetic additives, parabens, or sulfates.
+            </div>
+        </div>
+
+        <!-- FAQ Item -->
+        <div class="border rounded-lg p-4 bg-white shadow-sm">
+            <button class="w-full flex justify-between items-center text-left font-medium"
+                    @click="open === 2 ? open = null : open = 2">
+                <span>Do you have certifications for organic ingredients?</span>
+                <span :class="open === 2 ? 'rotate-180' : ''" class="transition-transform">&#9662;</span>
+            </button>
+            <div x-show="open === 2" x-collapse class="mt-2 text-gray-600">
+                Yes, our products are certified by USDA Organic, Ecocert, and other globally recognized bodies.
+            </div>
+        </div>
+
+        <!-- FAQ Item -->
+        <div class="border rounded-lg p-4 bg-white shadow-sm">
+            <button class="w-full flex justify-between items-center text-left font-medium"
+                    @click="open === 3 ? open = null : open = 3">
+                <span>Do you use artificial fragrances or preservatives?</span>
+                <span :class="open === 3 ? 'rotate-180' : ''" class="transition-transform">&#9662;</span>
+            </button>
+            <div x-show="open === 3" x-collapse class="mt-2 text-gray-600">
+                No, we only use natural essential oils and plant-based preservatives.
+            </div>
+        </div>
+
+        <!-- FAQ Item -->
+        <div class="border rounded-lg p-4 bg-white shadow-sm">
+            <button class="w-full flex justify-between items-center text-left font-medium"
+                    @click="open === 4 ? open = null : open = 4">
+                <span>Is your packaging eco-friendly?</span>
+                <span :class="open === 4 ? 'rotate-180' : ''" class="transition-transform">&#9662;</span>
+            </button>
+            <div x-show="open === 4" x-collapse class="mt-2 text-gray-600">
+                Yes! We use recyclable, biodegradable, and plastic-free packaging wherever possible.
+            </div>
+        </div>
+
+        <!-- FAQ Item -->
+        <div class="border rounded-lg p-4 bg-white shadow-sm">
+            <button class="w-full flex justify-between items-center text-left font-medium"
+                    @click="open === 5 ? open = null : open = 5">
+                <span>How do I return a product if I'm not satisfied?</span>
+                <span :class="open === 5 ? 'rotate-180' : ''" class="transition-transform">&#9662;</span>
+            </button>
+            <div x-show="open === 5" x-collapse class="mt-2 text-gray-600">
+                We offer a hassle-free return policy. Please check our Returns & Refunds page for details.
+            </div>
+        </div>
+
+    </div>
 </section>
+
+<!-- Alpine.js (lightweight, 8kb) - Required for dropdowns -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+
 {% endblock %}

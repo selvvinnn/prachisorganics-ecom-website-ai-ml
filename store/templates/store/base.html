@@ -87,19 +87,7 @@
 
             <!-- RIGHT ICONS - evenly spaced -->
             <div class="flex items-center gap-4 text-brandBrown text-sm font-medium">
-                        <div class="relative flex items-center">
-                    <button id="searchToggle" class="text-[#7FAC6E] hover:text-[#8B4513]">
-                        <i class="fa fa-search"></i>
-                    </button>
 
-                    <input
-                        id="headerSearch"
-                        type="text"
-                        placeholder="Search..."
-                        class="hidden md:block border border-gray-300 rounded-full px-4 py-1
-                               transition-all duration-300 w-0 opacity-0 absolute right-10"
-                    >
-                </div>
                 {% if request.user.is_authenticated %}
                   <a href="/profile/" class="text-[#7FAC6E] hover:text-[#8B4513]"><i class="fa-regular fa-user"></i></a>
                   <a href="/logout/" class="text-[#7FAC6E] hover:text-[#8B4513]"><i class="fa-solid fa-right-from-bracket"></i></a>
@@ -144,13 +132,47 @@ window.addEventListener("scroll", function () {
     </div>
 
     <nav class="flex flex-col p-4 space-y-4 text-lg">
-        <a href="/" class="hover:text-purple-600">Home</a>
-        <a href="/products" class="hover:text-purple-600">Shop</a>
-        <a href="/about" class="hover:text-purple-600">About</a>
-        <a href="/contact" class="hover:text-purple-600">Contact</a>
+
+      <a href="/" class="hover:text-purple-600">Home</a>
+  
+      <!-- SHOP BY CATEGORY DROPDOWN -->
+      <div>
+          <button 
+              onclick="toggleCategoryDropdown()" 
+              class="w-full flex justify-between items-center hover:text-purple-600"
+          >
+              <span>Shop by Category</span>
+              <span id="category-arrow" class="transition-transform">&#9662;</span>
+          </button>
+  
+          <!-- Hidden dropdown -->
+          <div id="category-dropdown" class="ml-4 mt-2 space-y-3 hidden">
+              <a href="/products/?category=skin-care" class="block hover:text-purple-600">Face Care</a>
+              <a href="/products/?category=hair-care" class="block hover:text-purple-600">Hair Care</a>
+              <a href="/products/?category=body-care" class="block hover:text-purple-600">Body Care</a>
+          </div>
+      </div>
+      <a href="/products" class="hover:text-purple-600">Shop All</a>
+      <a href="/combos" class="hover:text-purple-600">Combos</a> 
+      <a href="/track_order" class="hover:text-purple-600">Track Order</a>
+      <a href="/about" class="hover:text-purple-600">About</a>
+      <a href="/contact" class="hover:text-purple-600">Contact</a>
     </nav>
+  
 </div>
 
+<script>
+  function toggleCategoryDropdown() {
+      const dropdown = document.getElementById('category-dropdown');
+      const arrow = document.getElementById('category-arrow');
+  
+      dropdown.classList.toggle('hidden');
+  
+      // Rotate arrow when open
+      arrow.classList.toggle('rotate-180');
+  }
+  </script>
+  
 <script>
 function openMenu() {
     document.getElementById("mobileMenu").style.transform = "translateX(0)";

@@ -1,3 +1,4 @@
+from itertools import product
 import razorpay
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -153,17 +154,12 @@ def login_view(request):
         messages.error(request, 'Invalid credentials.')
     return render(request, 'store/login.html')
 
-
-def logout_view(request):
-    logout(request)
-    return redirect('store:home')
-
-
 def home_view(request):
     featured_products = Product.objects.filter(is_available=True)[:4]
     combos = ComboDeal.objects.all()[:4]
     categories = Category.objects.all()
     recent_reviews = Review.objects.select_related('product', 'user').order_by('-created_at')[:10]
+
     return render(request, 'store/index.html', {
         'featured_products': featured_products,
         'combos': combos,
@@ -171,6 +167,10 @@ def home_view(request):
         'steps': [1, 2, 3, 4],
         'recent_reviews': recent_reviews,
     })
+
+def logout_view(request):
+    logout(request)
+    return redirect('store:home')
 
 
 def about_us_view(request):
@@ -484,25 +484,6 @@ def add_to_cart(request, product_slug):
 
 from django.contrib.auth.decorators import login_required
 
-def home_view(request):
-    # ---------- CART COUNT ----------
-    cart = request.session.get('cart', {})
-    cart_count = sum(item.get('quantity', 1) for item in cart.values())
-
-    # ---------- EXISTING DATA ----------
-    featured_products = Product.objects.filter(is_available=True)[:4]
-    combos = ComboDeal.objects.all()[:4]
-    categories = Category.objects.all()
-    recent_reviews = Review.objects.select_related('product', 'user').order_by('-created_at')[:10]
-
-    return render(request, 'store/index.html', {
-        'featured_products': featured_products,
-        'combos': combos,
-        'categories': categories,
-        'steps': [1, 2, 3, 4],
-        'recent_reviews': recent_reviews,
-        'cart_count': cart_count,   # <-- ADD THIS
-    })
 
 @login_required
 def profile(request):
@@ -847,18 +828,32 @@ def checkout_view(request):
     return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
 
 @login_required
-def reorder(request, order_id):
+def reorder_items(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
+    print("CART AFTER REORDER:", request.session.get("cart"))
+
+    # Get cart from session or create empty
+    cart = request.session.get("cart", {})
 
     for item in order.items.all():
-        Cart.objects.create(
-            user=request.user,
-            product=item.product,
-            quantity=item.quantity
-        )
+        product = item.product
+        product_id = str(product.id)
 
-    messages.success(request, "Items added to cart.")
-    return redirect("/cart/")
+        if product_id in cart:
+            # Increase quantity if already in cart
+            cart[product_id]["quantity"] += item.quantity
+        else:
+            # Add fresh product
+            cart[product_id] = {
+                "quantity": item.quantity,
+                "price": float(item.unit_price) if item.unit_price else float(product.price)
+            }
+
+    # Save cart back to session
+    request.session["cart"] = cart
+    request.session.modified = True  # 🔴 VERY IMPORTANT
+
+    return redirect("store:cart")
 
 @login_required
 def cancel_order(request, order_id):
@@ -1109,3 +1104,15 @@ def admin_reject_cancel(request, cancel_id):
 
     messages.error(request, f"Cancellation for Order #{order.id} was rejected.")
     return redirect("/admin/store/cancellationrequest/")
+
+@login_required
+def order_detail(request, order_id):
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        user=request.user
+    )
+
+    return render(request, 'store/order_detail.html', {
+        'order': order
+    })
