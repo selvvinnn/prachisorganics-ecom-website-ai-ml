@@ -27,7 +27,8 @@ from .models import (
     ContactMessage,
     CustomUser,
     Coupon,
-    CancellationRequest
+    CancellationRequest,
+    ShippingAddress
 )
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -633,48 +634,57 @@ from decimal import Decimal
 
 @login_required
 def checkout_view(request):
+    COD_SHIPPING_CHARGE = Decimal("99.00")
     cart, _ = Cart.objects.get_or_create(user=request.user)
     items = cart.items.select_related('product', 'combo_deal').all()
-    
+
     if not items:
         messages.error(request, 'Your cart is empty.')
         return redirect('store:products')
 
-    subtotal = sum([item.line_total() for item in items])
+    subtotal = sum(item.line_total() for item in items)
 
     # -------------------------------
     # COUPON LOGIC
     # -------------------------------
     applied_coupon = None
-    discount_amount = 0
+    discount_amount = Decimal('0')
     final_amount = subtotal
 
-    # Load applied coupon from session (if exists)
-    if request.session.get('coupon_code'):
+    coupon_code = request.session.get('coupon_code')
+    if coupon_code:
         try:
             applied_coupon = Coupon.objects.get(
-                Q(code__iexact=request.session['coupon_code']),
-                Q(active=True),
-                Q(valid_from__lte=timezone.now()),
-                Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
+                code__iexact=coupon_code,
+                active=True,
+                valid_from__lte=timezone.now()
             )
-            discount_amount = subtotal * (applied_coupon.discount_percentage / Decimal(100))
-            final_amount = subtotal - discount_amount
+            discount_amount = subtotal * (applied_coupon.discount_percentage / Decimal('100'))
+            final_amount = max(subtotal - discount_amount, Decimal('0.00'))
+            # Add shipping ONLY for COD
+            payment_method = request.POST.get("payment_method") or request.GET.get("payment_method")
+
+            shipping_charge = Decimal("0.00")
+            if payment_method == "cod":
+                shipping_charge = COD_SHIPPING_CHARGE
+
+            final_amount += shipping_charge
         except Coupon.DoesNotExist:
             request.session.pop('coupon_code', None)
 
-    # User applies coupon via GET request
+    # -------------------------------
+    # APPLY COUPON (GET)
+    # -------------------------------
     if request.method == "GET" and request.GET.get("coupon"):
         code = request.GET.get("coupon").strip()
         try:
-            coupon = Coupon.objects.get(
-                Q(code__iexact=code),
-                Q(active=True),
-                Q(valid_from__lte=timezone.now()),
-                Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
+            Coupon.objects.get(
+                code__iexact=code,
+                active=True,
+                valid_from__lte=timezone.now()
             )
-            request.session['coupon_code'] = coupon.code
-            return redirect('store:checkout')  # reload page
+            request.session['coupon_code'] = code
+            return redirect('store:checkout')
         except Coupon.DoesNotExist:
             messages.error(request, "Invalid or expired coupon code.")
             return redirect('store:checkout')
@@ -684,23 +694,18 @@ def checkout_view(request):
     # -------------------------------
     if request.method == 'GET':
         client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
-
-        amount_in_paise = int(final_amount * 100)
-
-        # Razorpay minimum amount check
-        if amount_in_paise < 100:
-            # less than ₹1
-            amount_in_paise = 100  # force minimum ₹1
+        amount_in_paise = max(int(final_amount * 100), 100)
 
         payment = client.order.create({
-    'amount': amount_in_paise,
-    'currency': 'INR',
-    'payment_capture': 1
-    })
+            'amount': amount_in_paise,
+            'currency': 'INR',
+            'payment_capture': 1
+        })
+
         cart.razorpay_order_id = payment['id']
         cart.save()
 
-        context = {
+        return render(request, 'store/checkout.html', {
             'cart': cart,
             'payment': payment,
             'items': items,
@@ -708,43 +713,32 @@ def checkout_view(request):
             'discount_amount': discount_amount,
             'final_amount': final_amount,
             'applied_coupon': applied_coupon.code if applied_coupon else None,
-            'checkout_data': {
-                'first_name': request.user.first_name,
-                'last_name': request.user.last_name,
-                'email': request.user.email,
-                'address': getattr(request.user, 'address', ''),
-                'city': getattr(request.user, 'city', ''),
-                'zipcode': getattr(request.user, 'zipcode', ''),
-            }
-        }
-        return render(request, 'store/checkout.html', context)
+        })
 
     # -------------------------------
     # PAYMENT VERIFICATION (POST)
     # -------------------------------
-    elif request.method == 'POST':
+    if request.method == 'POST':
         try:
-            body = request.body.decode('utf-8').strip()
-            data = json.loads(body) if body else {}
+            data = request.POST  # ✅ FIX: USE request.POST
 
             razorpay_order_id = data.get('razorpay_order_id')
             razorpay_payment_id = data.get('razorpay_payment_id')
             razorpay_signature = data.get('razorpay_signature')
 
-            first_name = (data.get('first_name') or '').strip()
-            last_name = (data.get('last_name') or '').strip()
-            email = (data.get('email') or '').strip()
-            address = (data.get('address') or '').strip()
-            zipcode = (data.get('zipcode') or '').strip()
-            city = (data.get('city') or '').strip()
+            first_name = data.get('first_name', '').strip()
+            last_name = data.get('last_name', '').strip()
+            email = data.get('email', '').strip()
+            address = data.get('address', '').strip()
+            zipcode = data.get('zipcode', '').strip()
+            city = data.get('city', '').strip()
 
             if not all([first_name, last_name, email, address, zipcode, city]):
                 return JsonResponse({'status': 'failure', 'message': 'Missing address details'})
 
-            if not (razorpay_order_id and razorpay_payment_id and razorpay_signature):
+            if not all([razorpay_order_id, razorpay_payment_id, razorpay_signature]):
                 return JsonResponse({'status': 'failure', 'message': 'Missing Razorpay payment details'})
 
-            # Verify Razorpay signature
             client = razorpay.Client(auth=(settings.RP_KEY_ID, settings.RP_KEY_SECRET))
             client.utility.verify_payment_signature({
                 'razorpay_order_id': razorpay_order_id,
@@ -752,26 +746,7 @@ def checkout_view(request):
                 'razorpay_signature': razorpay_signature
             })
 
-            # Recalculate final amount with coupon to double-secure
-            coupon_code = request.session.get('coupon_code')
-            applied_coupon = None
-            discount_amount = 0
-            final_amount = subtotal
-
-            if coupon_code:
-                try:
-                    applied_coupon = Coupon.objects.get(
-                        Q(code__iexact=coupon_code),
-                        Q(active=True),
-                        Q(valid_from__lte=timezone.now()),
-                        Q(valid_to__isnull=True) | Q(valid_to__gte=timezone.now())
-                    )
-                    discount_amount = subtotal * (applied_coupon.discount_percentage / Decimal(100))
-                    final_amount = subtotal - discount_amount
-                except Coupon.DoesNotExist:
-                    pass
-
-            # Create order
+            # Create Order
             order = Order.objects.create(
                 user=request.user,
                 first_name=first_name,
@@ -789,43 +764,28 @@ def checkout_view(request):
                 razorpay_payment_status='paid'
             )
 
-            # Save items + update stock
+            # Save items
             for item in items:
-                if item.combo_deal:
-                    OrderItem.objects.create(
-                        order=order,
-                        combo_deal=item.combo_deal,
-                        price=item.combo_deal.discounted_price,
-                        quantity=item.quantity
-                    )
-                    for prod in item.combo_deal.products.all():
-                        if prod.stock >= item.quantity:
-                            prod.stock -= item.quantity
-                            prod.save()
-                else:
-                    item_price = item.unit_price if item.unit_price else item.product.get_display_price()
-                    OrderItem.objects.create(
-                        order=order,
-                        product=item.product,
-                        price=item_price,
-                        quantity=item.quantity
-                    )
-                    if item.product.stock >= item.quantity:
-                        item.product.stock -= item.quantity
-                        item.product.save()
+                price = item.unit_price or item.product.get_display_price()
+                OrderItem.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                    price=price
+                )
+                if item.product.stock >= item.quantity:
+                    item.product.stock -= item.quantity
+                    item.product.save()
 
-            # Clear cart and coupon
             cart.items.all().delete()
             request.session.pop('coupon_code', None)
 
-            messages.success(request, "Payment successful! Order placed.")
-            return JsonResponse({'status': 'success', 'redirect_url': '/order-success/'})
+            return JsonResponse({'status': 'success'})
 
         except Exception as e:
-            print("Payment verification failed:", str(e))
-            return JsonResponse({'status': 'failure', 'message': f'Payment verification failed: {str(e)}'})
+            print("Payment verification failed:", e)
+            return JsonResponse({'status': 'failure', 'message': str(e)})
 
-    return JsonResponse({'status': 'failure', 'message': 'Invalid request'})
 
 @login_required
 def reorder_items(request, order_id):
@@ -1115,4 +1075,74 @@ def order_detail(request, order_id):
 
     return render(request, 'store/order_detail.html', {
         'order': order
+    })
+
+@login_required
+def place_cod_order(request):
+    if request.method != "POST":
+        return JsonResponse({"status": "failure", "message": "Invalid request"}, status=400)
+
+    cart = Cart.objects.filter(user=request.user).first()
+    items = cart.items.select_related('product', 'combo_deal') if cart else None
+
+    if not items or not items.exists():
+        return JsonResponse({"status": "failure", "message": "Cart is empty"}, status=400)
+
+    # Address
+    first_name = request.POST.get("first_name")
+    last_name = request.POST.get("last_name")
+    email = request.POST.get("email")
+    address = request.POST.get("address")
+    zipcode = request.POST.get("zipcode")
+    city = request.POST.get("city")
+
+    if not all([first_name, last_name, email, address, zipcode, city]):
+        return JsonResponse({"status": "failure", "message": "Missing address details"}, status=400)
+
+    subtotal = sum(item.line_total() for item in items)
+    shipping_charge = 50
+    final_amount = subtotal + shipping_charge
+
+    # Create ORDER (✅ FIXED)
+    order = Order.objects.create(
+        user=request.user,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        address=address,
+        city=city,
+        zipcode=zipcode,
+
+        paid_amount=final_amount,
+        shipping_charge=shipping_charge,
+
+        payment_method='cod',        # ✅ FIX
+        payment_status='cod',        # ✅ FIX
+        status='processing',
+    )
+
+    # Save order items
+    for item in items:
+        if item.combo_deal:
+            OrderItem.objects.create(
+                order=order,
+                combo_deal=item.combo_deal,
+                quantity=item.quantity,
+                price=item.combo_deal.discounted_price
+            )
+        else:
+            OrderItem.objects.create(
+                order=order,
+                product=item.product,
+                quantity=item.quantity,
+                price=item.unit_price or item.product.get_display_price()
+            )
+
+    # Clear cart
+    items.delete()
+    request.session.pop('coupon_code', None)
+
+    return JsonResponse({
+        "status": "success",
+        "redirect_url": "/order-success/"
     })

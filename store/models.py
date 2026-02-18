@@ -185,6 +185,16 @@ class Order(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
+    PAYMENT_METHODS = [
+        ('razorpay', 'Online Payment'),
+        ('cod', 'Cash on Delivery'),
+    ]
+
+    PAYMENT_STATUS = [
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+    ]
+
     user = models.ForeignKey('CustomUser', on_delete=models.CASCADE, related_name='orders')
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -193,20 +203,26 @@ class Order(models.Model):
     zipcode = models.CharField(max_length=20)
     city = models.CharField(max_length=100)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    shipping_charge = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    payment_method = models.CharField(
+        max_length=20, choices=PAYMENT_METHODS, default='razorpay'
+    )
+    payment_status = models.CharField(
+        max_length=20, choices=PAYMENT_STATUS, default='pending'
+    )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='processing')
     created_at = models.DateTimeField(auto_now_add=True)
     shipped = models.BooleanField(default=False)
     date_shipped = models.DateTimeField(blank=True, null=True)
     coupon = models.CharField(max_length=50, blank=True, null=True)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
-
     razorpay_order_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_id = models.CharField(max_length=100, blank=True, null=True)
     razorpay_payment_status = models.CharField(max_length=50, blank=True, null=True)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
+
 
 #Auto add shipping date when marked as shipped
 @receiver(pre_save, sender=Order)

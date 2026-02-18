@@ -762,59 +762,59 @@
   
   
 
-  <section class="container mx-auto px-4 md:px-12 lg:px-24 py-12 text-center">
-    <h2 class="font-serif text-3xl mb-8 bg-center">Shop by Category</h2>
-  
-    <!-- MOBILE: Horizontal slider -->
-    <div class="flex md:hidden gap-5 overflow-x-auto snap-x snap-mandatory pb-4">
-      {% for category in categories %}
-        <a href="/products/?category={{ category.slug }}"
-           class="snap-center min-w-[80%] bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-  
-          <div class="relative aspect-[3/4] bg-brandBeige overflow-hidden">
-            {% if category.image %}
-              <img src="{{ category.image.url }}"
-                   alt="{{ category.name }}"
-                   class="absolute inset-0 w-full h-full object-cover"/>
-            {% endif %}
-          </div>
-  
-          <div class="p-4 flex items-center justify-between">
-            <div class="font-semibold">{{ category.name }}</div>
-            <div class="text-brandGreen text-lg">→</div>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
-  
-    <!-- DESKTOP/TABLET GRID -->
-    <div class="hidden md:grid md:grid-cols-3 gap-10">
-      {% for category in categories %}
-        <a href="/products/?category={{ category.slug }}"
-           class="group bg-white rounded-xl shadow overflow-hidden">
-  
-          <div class="relative h-80 bg-brandBeige overflow-hidden">
-            {% if category.image %}
-              <img src="{{ category.image.url }}"
-                   alt="{{ category.name }}"
-                   class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
-            {% endif %}
-            {% if category.hover_image %}
-              <img src="{{ category.hover_image.url }}"
-                   alt="{{ category.name }} hover"
-                   class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
-            {% endif %}
-          </div>
-  
-          <div class="p-4 flex items-center justify-between">
-            <div class="font-semibold">{{ category.name }}</div>
-            <div class="text-brandGreen text-lg">→</div>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
-  </section>
-  
+    <section class="container mx-auto px-4 md:px-12 lg:px-24 py-12 text-center">
+      <h2 class="font-serif text-3xl mb-8 bg-center">Shop by Category</h2>
+    
+      <!-- MOBILE: Horizontal slider -->
+      <div class="flex md:hidden gap-5 overflow-x-auto snap-x snap-mandatory pb-4">
+        {% for category in categories %}
+          <a href="/products/?category={{ category.slug }}"
+            class="snap-center min-w-[80%] bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
+    
+            <div class="relative aspect-[3/4] bg-brandBeige overflow-hidden">
+              {% if category.image %}
+                <img src="{{ category.image.url }}"
+                    alt="{{ category.name }}"
+                    class="absolute inset-0 w-full h-full object-cover"/>
+              {% endif %}
+            </div>
+    
+            <div class="p-4 flex items-center justify-between">
+              <div class="font-semibold">{{ category.name }}</div>
+              <div class="text-brandGreen text-lg">→</div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    
+      <!-- DESKTOP/TABLET GRID -->
+      <div class="hidden md:grid md:grid-cols-3 gap-10">
+        {% for category in categories %}
+          <a href="/products/?category={{ category.slug }}"
+            class="group bg-white rounded-xl shadow overflow-hidden">
+    
+            <div class="relative h-80 bg-brandBeige overflow-hidden">
+              {% if category.image %}
+                <img src="{{ category.image.url }}"
+                    alt="{{ category.name }}"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100 group-hover:opacity-0"/>
+              {% endif %}
+              {% if category.hover_image %}
+                <img src="{{ category.hover_image.url }}"
+                    alt="{{ category.name }} hover"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 group-hover:opacity-100"/>
+              {% endif %}
+            </div>
+    
+            <div class="p-4 flex items-center justify-between">
+              <div class="font-semibold">{{ category.name }}</div>
+              <div class="text-brandGreen text-lg">→</div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+    
 
   
 

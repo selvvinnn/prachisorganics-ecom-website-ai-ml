@@ -43,6 +43,7 @@ urlpatterns = [
     path("admin/cancel/<int:cancel_id>/approve/", views.admin_approve_cancel, name="admin_approve_cancel"),
     path("admin/cancel/<int:cancel_id>/reject/", views.admin_reject_cancel, name="admin_reject_cancel"),
     path('orders/<int:order_id>/', views.order_detail, name='order_detail'),
+    path("checkout/cod/", views.place_cod_order, name="place_cod_order"),
 
 ]
 

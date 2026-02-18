@@ -67,8 +67,7 @@
           <div class="mt-5 flex flex-col gap-3">
 
             <!-- REORDER BUTTON -->
-            <form method="POST" action="{% url 'store:reorder' order.id %}"
->
+            <form method="POST" action="{% url 'store:reorder' order.id %}">
               {% csrf_token %}
               <button type="submit"
                 class="w-full text-sm px-4 py-2 rounded-full border border-green-500 bg-brandGreen text-black hover:bg-green-700 transition">

@@ -51,14 +51,30 @@ class OrderItemInline(admin.TabularInline):
     extra = 0
     can_delete = False
 
-    readonly_fields = ('product', 'quantity', 'price', 'subtotal')
+    readonly_fields = ("item_name", "quantity", "price", "subtotal")
+
+    def item_name(self, obj):
+        """
+        Safely show product or combo name
+        """
+        if obj.product:
+            return obj.product.name
+        if hasattr(obj, "combo_deal") and obj.combo_deal:
+            return obj.combo_deal.name
+        return "—"
+
+    item_name.short_description = "Item"
 
     def subtotal(self, obj):
+        """
+        Safe subtotal calculation
+        """
         if obj.price is None or obj.quantity is None:
             return "—"
         return f"₹ {obj.quantity * obj.price:.2f}"
 
     subtotal.short_description = "Subtotal"
+
 
 
 
@@ -93,10 +109,19 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
 
     def ordered_products(self, obj):
-        return ", ".join(
-            f"{item.product.name} (x{item.quantity})"
-            for item in obj.items.all()
-        )
+        products = []
+        for item in obj.items.all():
+            if item.product:
+                name = item.product.name
+            elif hasattr(item, "combo_deal") and item.combo_deal:
+                name = item.combo_deal.name
+            else:
+                name = "Unknown Item"
+
+            products.append(f"{name} (x{item.quantity})")
+
+        return ", ".join(products)
+
 
     ordered_products.short_description = "Products Ordered"
 
