@@ -213,45 +213,56 @@ PrachiWebsiteNEW/
 ├── .gitignore
 └── README.md
 
+```
+## Installation and Local Setup
 
-Installation and Local Setup
-1. Clone the Repository
-git clone https://github.com/selvvinnn/your-repository-name.git
-cd your-repository-name
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/selvvinnn/prachisorganics-ecom-website-ai-ml.git
+```
+
 2. Create a Virtual Environment
+```bash
 python -m venv .venv
-
+```
 Activate it:
 
 For Windows:
-
+```bash
 .venv\Scripts\activate
-
+```
 For Mac/Linux:
-
+```bash
 source .venv/bin/activate
 3. Install Dependencies
 pip install -r requirements.txt
 4. Create .env File
-
+```
 Create a .env file in the project root.
 
 Example:
-
+```bash
 SECRET_KEY=your_django_secret_key
 DEBUG=True
 OPENAI_API_KEY=your_openai_api_key
-
+```
 Do not push .env to GitHub.
 
 5. Run Migrations
+```bash
 python manage.py makemigrations
 python manage.py migrate
-6. Create Superuser
+```
+7. Create Superuser
+```bash
 python manage.py createsuperuser
-7. Run Django Server
+```
+9. Run Django Server
+```bash
 python manage.py runserver
-
+```
 Open:
-
+```bash
 http://127.0.0.1:8000/
+```
