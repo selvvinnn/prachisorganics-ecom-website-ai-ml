@@ -224,7 +224,6 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 
-
 <!-- ================= CONTENT ================= -->
 <main>
     {% block content %}{% endblock %}
@@ -328,7 +327,76 @@ document.addEventListener("DOMContentLoaded", function () {
           <div>Copyright © {{ now|default:2025 }} Prachi's Organics</div>
         </div>
       </div>
-    </footer>
 
+
+    </footer>
+<!-- CHAT BUTTON -->
+<div id="chatToggle"
+     class="fixed bottom-5 right-5 bg-[#7FAC6E] text-white px-4 py-3 rounded-full cursor-pointer shadow-lg z-50">
+    💬
+</div>
+
+<!-- CHAT BOX -->
+<div id="chatBox"
+     class="fixed bottom-20 right-5 w-80 bg-white shadow-xl rounded-xl hidden flex flex-col z-50">
+
+    <div class="bg-[#7FAC6E] text-white p-3 rounded-t-xl">
+        Prachi's AI Assistant 🌿
+    </div>
+
+    <div id="chatMessages" class="p-3 h-64 overflow-y-auto text-sm"></div>
+
+    <div class="flex border-t">
+        <input id="chatInput" type="text"
+               class="flex-1 p-2 outline-none"
+               placeholder="Ask about skincare..." />
+        <button onclick="sendMessage()"
+                class="bg-[#7FAC6E] text-white px-4">Send</button>
+    </div>
+</div>
+
+<script>
+console.log("Chatbot JS Loaded");
+
+const chatToggle = document.getElementById("chatToggle");
+const chatBox = document.getElementById("chatBox");
+
+console.log(chatToggle);
+
+chatToggle.onclick = () => {
+    chatBox.classList.toggle("hidden");
+};
+
+async function sendMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value;
+
+    if (!message) return;
+
+    const chatMessages = document.getElementById("chatMessages");
+
+    chatMessages.innerHTML += `<div><b>You:</b> ${message}</div>`;
+    input.value = "";
+
+    try {
+        const response = await fetch("/chatbot/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ query: message }),
+        });
+
+        const data = await response.json();
+
+        chatMessages.innerHTML += `<div><b>Bot:</b> ${data.answer}</div>`;
+    } catch (err) {
+        chatMessages.innerHTML += `<div style="color:red;">Error</div>`;
+    }
+}
+</script>
+</div>
 </body>
 </html>
+
+

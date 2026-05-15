@@ -1,0 +1,151 @@
+{% extends 'store/base.html' %}
+
+{% block content %}
+
+<div class="max-w-2xl mx-auto mt-32 p-6 bg-white shadow-xl rounded-2xl text-center">
+    <h1 class="text-3xl font-semibold mb-3 text-[#7FAC6E]">
+        Register Face Login
+    </h1>
+
+    <p class="text-gray-600 mb-6">
+        Use your webcam to register your face for faster login.
+    </p>
+
+    <div class="flex flex-col items-center gap-4">
+
+        <video id="video"
+               width="420"
+               height="320"
+               autoplay
+               playsinline
+               class="rounded-xl border shadow bg-black">
+        </video>
+
+        <canvas id="canvas"
+                width="420"
+                height="320"
+                class="hidden">
+        </canvas>
+
+        <div class="flex gap-3">
+    <button id="startCameraBtn"
+            class="bg-[#7FAC6E] text-white px-5 py-2 rounded-lg hover:bg-[#6c985e]">
+        Start Camera
+    </button>
+
+    <button id="captureBtn"
+            class="bg-[#8B4513] text-white px-5 py-2 rounded-lg hover:bg-[#70370f]">
+        Capture & Register
+    </button>
+
+    <button id="closeCameraBtn"
+            class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800">
+        Close Camera
+    </button>
+</div>
+
+        <p id="statusMessage" class="mt-4 text-sm font-medium"></p>
+    <div id="backToProfileWrapper" class="mt-4 hidden">
+        <a href="/profile/"
+        class="inline-block bg-[#7FAC6E] text-white px-5 py-2 rounded-lg hover:bg-[#6c985e]">
+            Back to Profile
+        </a>
+    </div>
+    </div>
+</div>
+
+<script>
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const startCameraBtn = document.getElementById("startCameraBtn");
+const captureBtn = document.getElementById("captureBtn");
+const closeCameraBtn = document.getElementById("closeCameraBtn");
+const statusMessage = document.getElementById("statusMessage");
+const backToProfileWrapper = document.getElementById("backToProfileWrapper");
+
+let cameraStream = null;
+
+startCameraBtn.addEventListener("click", async () => {
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
+
+        video.srcObject = cameraStream;
+        statusMessage.textContent = "Camera started. Position your face clearly.";
+        statusMessage.className = "mt-4 text-sm font-medium text-green-700";
+
+    } catch (error) {
+        console.error(error);
+        statusMessage.textContent = "Could not access camera. Please allow camera permission.";
+        statusMessage.className = "mt-4 text-sm font-medium text-red-600";
+    }
+});
+closeCameraBtn.addEventListener("click", () => {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+        video.srcObject = null;
+
+        statusMessage.textContent = "Camera closed.";
+        statusMessage.className = "mt-4 text-sm font-medium text-gray-700";
+    } else {
+        statusMessage.textContent = "Camera is not running.";
+        statusMessage.className = "mt-4 text-sm font-medium text-red-600";
+    }
+});
+captureBtn.addEventListener("click", async () => {
+    if (!cameraStream) {
+        statusMessage.textContent = "Please start the camera first.";
+        statusMessage.className = "mt-4 text-sm font-medium text-red-600";
+        return;
+    }
+
+    const context = canvas.getContext("2d");
+
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    const imageData = canvas.toDataURL("image/jpeg", 0.9);
+
+    statusMessage.textContent = "Processing face...";
+    statusMessage.className = "mt-4 text-sm font-medium text-gray-700";
+
+    try {
+        const response = await fetch("/face-register-api/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                image: imageData
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            statusMessage.textContent = data.message;
+            statusMessage.className = "mt-4 text-sm font-medium text-green-700";
+
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+                video.srcObject = null;
+            }
+        } else {
+            statusMessage.textContent = data.message;
+            statusMessage.className = "mt-4 text-sm font-medium text-red-600";
+
+            backToProfileWrapper.classList.remove("hidden");
+        }
+
+    } catch (error) {
+        console.error(error);
+        statusMessage.textContent = "Something went wrong while registering face.";
+        statusMessage.className = "mt-4 text-sm font-medium text-red-600";
+    }
+});
+</script>
+
+{% endblock %}

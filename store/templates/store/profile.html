@@ -18,6 +18,31 @@
     </div>
   </div>
 
+<div class="mt-6 p-4 rounded-xl border bg-white shadow-sm">
+    <h3 class="text-lg font-semibold text-[#7FAC6E] mb-2">
+        Face Login
+    </h3>
+
+    {% if face_profile and face_profile.is_face_registered %}
+        <p class="text-green-700 text-sm mb-3">
+            Face login is enabled for your account.
+        </p>
+
+        <a href="/face-register/"
+           class="inline-block bg-[#8B4513] text-white px-4 py-2 rounded-lg">
+            Update Face
+        </a>
+    {% else %}
+        <p class="text-gray-600 text-sm mb-3">
+            Face login is not enabled yet.
+        </p>
+
+        <a href="/face-register/"
+           class="inline-block bg-[#7FAC6E] text-white px-4 py-2 rounded-lg">
+            Register Face Login
+        </a>
+    {% endif %}
+</div>
 <!-- ORDERS SECTION -->
 <div class="mb-12">
   <h2 class="text-2xl font-serif font-semibold mb-5 text-brandBrown">My Orders</h2>

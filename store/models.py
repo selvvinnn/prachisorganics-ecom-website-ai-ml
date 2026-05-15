@@ -7,6 +7,8 @@ import datetime
 import cloudinary
 from cloudinary.models import CloudinaryField
 from django.db.models import Avg, Count
+from django.conf import settings
+
 
 
 
@@ -327,3 +329,33 @@ class CancellationRequest(models.Model):
 
     def __str__(self):
         return f"Cancellation for Order #{self.order.id}"
+
+
+
+
+class FaceProfile(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="face_profile"
+    )
+
+    embedding = models.JSONField(
+        null=True,
+        blank=True
+    )
+
+    is_face_registered = models.BooleanField(
+        default=False
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return f"FaceProfile - {self.user}"

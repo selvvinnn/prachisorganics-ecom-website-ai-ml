@@ -1,5 +1,6 @@
 from itertools import product
 import razorpay
+import base64
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -13,6 +14,11 @@ import json
 from django.utils import timezone
 from django.core.mail import send_mail
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import get_user_model
+
+from .models import FaceProfile
+from face_auth.service import face_service
+
 
 
 from .models import (
@@ -491,11 +497,14 @@ def profile(request):
     user = request.user
     orders = Order.objects.filter(user=user).order_by('-created_at')  # latest first
     combos = ComboDeal.objects.filter(user=user) if hasattr(ComboDeal, 'user') else None
+    face_profile = FaceProfile.objects.filter(user=user).first()
 
     context = {
         "user": user,
         "orders": orders,
         "combos": combos,
+        "face_profile": face_profile
+    
     }
     return render(request, "store/profile.html", context)
 
@@ -637,7 +646,7 @@ def checkout_view(request):
     COD_SHIPPING_CHARGE = Decimal("99.00")
     cart, _ = Cart.objects.get_or_create(user=request.user)
     items = cart.items.select_related('product', 'combo_deal').all()
-
+    
     if not items:
         messages.error(request, 'Your cart is empty.')
         return redirect('store:products')
@@ -1146,3 +1155,170 @@ def place_cod_order(request):
         "status": "success",
         "redirect_url": "/order-success/"
     })
+
+import requests
+
+@csrf_exempt
+def chatbot_api(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        query = data.get("query", "")
+
+        # Call FastAPI (LOCAL)
+        response = requests.post(
+            "http://127.0.0.1:8001/ask",
+            json={"query": query}
+        )
+
+        result = response.json()
+
+        return JsonResponse({"answer": result["answer"]})
+
+    return JsonResponse({"error": "Invalid request"})
+
+def decode_base64_image(data_url):
+    """
+    Converts browser webcam base64 image into raw image bytes.
+    Example input:
+    data:image/jpeg;base64,/9j/4AAQSkZJRg...
+    """
+    try:
+        header, encoded = data_url.split(",", 1)
+        return base64.b64decode(encoded)
+    except Exception:
+        return None
+    
+@login_required
+def face_register_page(request):
+    return render(request, "store/face_register.html")
+
+@csrf_exempt
+@login_required
+def face_register_api(request):
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid request method"
+        })
+
+    try:
+        data = json.loads(request.body)
+        image_data = data.get("image")
+
+        if not image_data:
+            return JsonResponse({
+                "success": False,
+                "message": "No image received"
+            })
+
+        image_bytes = decode_base64_image(image_data)
+
+        if not image_bytes:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid image data"
+            })
+
+        embedding, error = face_service.get_face_embedding(image_bytes)
+
+        if error:
+            return JsonResponse({
+                "success": False,
+                "message": error
+            })
+
+        profile, created = FaceProfile.objects.get_or_create(
+            user=request.user
+        )
+
+        profile.embedding = embedding
+        profile.is_face_registered = True
+        profile.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Face registered successfully"
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": str(e)
+        })
+
+@csrf_exempt
+def face_login_api(request):
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid request method"
+        })
+
+    try:
+        data = json.loads(request.body)
+        image_data = data.get("image")
+
+        if not image_data:
+            return JsonResponse({
+                "success": False,
+                "message": "No image received"
+            })
+
+        image_bytes = decode_base64_image(image_data)
+
+        if not image_bytes:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid image data"
+            })
+
+        captured_embedding, error = face_service.get_face_embedding(image_bytes)
+
+        if error:
+            return JsonResponse({
+                "success": False,
+                "message": error
+            })
+
+        profiles = FaceProfile.objects.filter(
+            is_face_registered=True
+        ).select_related("user")
+
+        best_match_user = None
+        best_score = 0
+
+        for profile in profiles:
+            if not profile.embedding:
+                continue
+
+            is_match, score = face_service.verify_face(
+                captured_embedding,
+                profile.embedding,
+                threshold=0.45
+            )
+
+            if score > best_score:
+                best_score = score
+
+                if is_match:
+                    best_match_user = profile.user
+
+        if best_match_user:
+            login(request, best_match_user)
+
+            return JsonResponse({
+                "success": True,
+                "message": "Face login successful",
+                "redirect_url": "/"
+            })
+
+        return JsonResponse({
+            "success": False,
+            "message": f"Face not recognized. Best score: {round(best_score, 3)}"
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "message": str(e)
+        })

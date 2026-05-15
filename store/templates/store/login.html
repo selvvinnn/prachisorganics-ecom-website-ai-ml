@@ -13,6 +13,181 @@
     </form>
     <div class="text-sm text-gray-600 mt-3">New here? <a class="text-brandGreen underline" href="/signup/">Create an account</a></div>
   </div>
+
+  <div class="text-center mt-6">
+    <button type="button"
+            id="openFaceLoginBtn"
+            class="bg-[#7FAC6E] text-white px-5 py-2 rounded-lg hover:bg-[#6c985e]">
+        Login with Face
+    </button>
+</div>
+
+<!-- Face Login Modal -->
+<div id="faceLoginModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl shadow-xl p-6 w-[90%] max-w-xl text-center relative">
+
+        <button type="button"
+                id="closeFaceLoginBtn"
+                class="absolute top-3 right-4 text-2xl text-gray-500 hover:text-black">
+            &times;
+        </button>
+
+        <h2 class="text-2xl font-semibold text-[#7FAC6E] mb-2">
+            Face Login
+        </h2>
+
+        <p class="text-gray-600 mb-4">
+            Look at the camera and capture your face to login.
+        </p>
+
+        <video id="faceLoginVideo"
+               width="420"
+               height="320"
+               autoplay
+               playsinline
+               class="mx-auto rounded-xl border shadow bg-black">
+        </video>
+
+        <canvas id="faceLoginCanvas"
+                width="420"
+                height="320"
+                class="hidden">
+        </canvas>
+
+        <div class="flex justify-center gap-3 mt-4">
+            <button type="button"
+                    id="startFaceLoginCameraBtn"
+                    class="bg-[#7FAC6E] text-white px-5 py-2 rounded-lg hover:bg-[#6c985e]">
+                Start Camera
+            </button>
+
+            <button type="button"
+                    id="captureFaceLoginBtn"
+                    class="bg-[#8B4513] text-white px-5 py-2 rounded-lg hover:bg-[#70370f]">
+                Capture & Login
+            </button>
+
+            <button type="button"
+                    id="closeFaceCameraBtn"
+                    class="bg-gray-700 text-white px-5 py-2 rounded-lg hover:bg-gray-800">
+                Close Camera
+            </button>
+        </div>
+
+        <p id="faceLoginStatus" class="mt-4 text-sm font-medium"></p>
+    </div>
+
+    <script>
+const openFaceLoginBtn = document.getElementById("openFaceLoginBtn");
+const faceLoginModal = document.getElementById("faceLoginModal");
+const closeFaceLoginBtn = document.getElementById("closeFaceLoginBtn");
+
+const faceLoginVideo = document.getElementById("faceLoginVideo");
+const faceLoginCanvas = document.getElementById("faceLoginCanvas");
+const startFaceLoginCameraBtn = document.getElementById("startFaceLoginCameraBtn");
+const captureFaceLoginBtn = document.getElementById("captureFaceLoginBtn");
+const closeFaceCameraBtn = document.getElementById("closeFaceCameraBtn");
+const faceLoginStatus = document.getElementById("faceLoginStatus");
+
+let faceLoginStream = null;
+
+function stopFaceLoginCamera() {
+    if (faceLoginStream) {
+        faceLoginStream.getTracks().forEach(track => track.stop());
+        faceLoginStream = null;
+        faceLoginVideo.srcObject = null;
+    }
+}
+
+openFaceLoginBtn.addEventListener("click", () => {
+    faceLoginModal.classList.remove("hidden");
+    faceLoginModal.classList.add("flex");
+});
+
+closeFaceLoginBtn.addEventListener("click", () => {
+    stopFaceLoginCamera();
+    faceLoginModal.classList.add("hidden");
+    faceLoginModal.classList.remove("flex");
+    faceLoginStatus.textContent = "";
+});
+
+startFaceLoginCameraBtn.addEventListener("click", async () => {
+    try {
+        faceLoginStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: false
+        });
+
+        faceLoginVideo.srcObject = faceLoginStream;
+        faceLoginStatus.textContent = "Camera started. Keep your face clearly visible.";
+        faceLoginStatus.className = "mt-4 text-sm font-medium text-green-700";
+
+    } catch (error) {
+        console.error(error);
+        faceLoginStatus.textContent = "Could not access camera. Please allow camera permission.";
+        faceLoginStatus.className = "mt-4 text-sm font-medium text-red-600";
+    }
+});
+
+closeFaceCameraBtn.addEventListener("click", () => {
+    stopFaceLoginCamera();
+    faceLoginStatus.textContent = "Camera closed.";
+    faceLoginStatus.className = "mt-4 text-sm font-medium text-gray-700";
+});
+
+captureFaceLoginBtn.addEventListener("click", async () => {
+    if (!faceLoginStream) {
+        faceLoginStatus.textContent = "Please start the camera first.";
+        faceLoginStatus.className = "mt-4 text-sm font-medium text-red-600";
+        return;
+    }
+
+    const context = faceLoginCanvas.getContext("2d");
+    context.drawImage(faceLoginVideo, 0, 0, faceLoginCanvas.width, faceLoginCanvas.height);
+
+    const imageData = faceLoginCanvas.toDataURL("image/jpeg", 0.9);
+
+    faceLoginStatus.textContent = "Verifying face...";
+    faceLoginStatus.className = "mt-4 text-sm font-medium text-gray-700";
+
+    try {
+        const response = await fetch("/face-login-api/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                image: imageData
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            faceLoginStatus.textContent = data.message;
+            faceLoginStatus.className = "mt-4 text-sm font-medium text-green-700";
+
+            stopFaceLoginCamera();
+
+            setTimeout(() => {
+                window.location.href = data.redirect_url || "/";
+            }, 800);
+
+        } else {
+            faceLoginStatus.textContent = data.message;
+            faceLoginStatus.className = "mt-4 text-sm font-medium text-red-600";
+        }
+
+    } catch (error) {
+        console.error(error);
+        faceLoginStatus.textContent = "Something went wrong during face login.";
+        faceLoginStatus.className = "mt-4 text-sm font-medium text-red-600";
+    }
+});
+</script>
+</div>
 </section>
 {% endblock %}
 
